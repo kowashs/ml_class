@@ -189,4 +189,101 @@ Supposing we know $P(Y\mid X)$, the Bayes optimal classifier is
 \begin{align}
 	f(x) &= \argmax_{y} \mathbb{P}(Y=y \mid X=x).
 \end{align}
+
+How do we actually estimate $\mathbb{P}(Y \mid X)$? Well, can't do linear, and we're out of tricks now. Need a new trick; some function that goes from $\mathbb{R}^d$ to $[0,1]$ (called link function). A nice option is the sigmoid/logistic curve:
+%
+\begin{align}
+	\mathbb{P}(Y=0 \mid X,W) &= \frac{1}{1+\exp\left[w_0 + \sum_i w_i X_i\right]}.
+\end{align}
+%
+Still a sort of linear model in terms of what we do to our data variables. Note that $w_0$ applies a horizontal shift, and the $w_i$ ``stretch'' the curve. Note a nice property for binary classification, which is that
+%
+\begin{align}
+	\frac{\mathbb{P}(Y=1 \mid w,X)}{\mathbb{P}(Y=0 \mid w,X)} &= \exp\left[w_0 + w^T X\right].
+\end{align}
+%
+Reasonable to make our rule to classify as 1 if ratio is greater than 1, classify as 0 if ratio is less than 1. Equivalent result,
+%
+\begin{align}
+	\ln \frac{\mathbb{P}(Y=1 \mid w,X)}{\mathbb{P}(Y=0 \mid w,X)}  = w_0 + \sum_i w_i X_i \to \left\{
+		\begin{array}{l}
+			< 0 \implies \text{ classify as 0}\\
+			> 0 \implies \text{ classify as 1}\\
+		\end{array}\right..
+\end{align}
+
+Alternative formulation (conditional likelihood): say $y \in \{-1,1\}$ instead of $\{0,1\}$ so we can then write
+%
+\begin{align}
+	\mathbb{P}(Y=y \mid x,w) &= \frac{1}{1+\exp\left(-y w^T x\right)}
+\end{align}
+%
+and find the MLE:
+%
+\begin{align}
+	\hat{w}_\mathrm{MLE} &= \argmax_w \prod_{i=1}^n \mathbb{P}(y_i \mid x_i,w)\\
+	\hat{w}_\mathrm{MLE} &= \argmin_w \sum_{i=1}^n \underbrace{\log\left(1+ \exp\left(-y_i x_i^T w\right) \right)}_{\sigma(y_i x_i^T w)}
+\end{align}
+%
+Call the objective $J(w)$ (logistic loss): what the hell does it look like? Is it convex? (Yes.) How do we minimize it? Note that for an argument $z$, $\sigma(z) \sim |z|$ as $z \to -\infty$ and $\sigma(z) \to 0$ as $z \to +\infty$. In between, does some nonsense. So $\sigma(z)$ is easy to understand, but what about $J(w)$? Generally, no closed form in terms of $w$, can't just take derivative and set to zero. It turns out, moreover, that if we happen to have a $w$ that correctly classifies every point (by dumb luck; linearly separable data set), then $y_i x_i^T w$ is strictly positive and so for $t > 0$, $y_i x_i^T (tw) > y_i x_i^T w$ and we will always prefer to infinitely extend our $w$ along our ``good'' direction to continue reducing loss. This breaks the classifier. Sigmoid classifiers become step functions. We \emph{need} to regularize this conditional log likelihood objective.
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Gradient descent}
+Recall that our general problem is to be handed i.i.d. data $\{(x_i,y_i)\}_{i=1}^n$ with $x_i \in \mathbb{R}^d$ and $y_i \in \mathbb{R}$, a model with some parameters $w$, and some loss function depending on $w$ to be calculated on our data, then optimize $w$ with respect to that loss. The computational meat is in optimization. We turn it into a problem that looks like $X^T X w = X^T Y$, but how do we actually do that? Lots of different ways! Many algorithms! Some depend on properties of matrices, sparseness, etc. Let's look at one in particular, which is gradient descent.
+
+Say I have some function $f(x)$ where $x \in \mathbb{R}^d$. Taylor tells us that
+%
+\begin{align}
+	f(x + \delta) &= f(x) + \nabla f(x) \cdot \delta + \cdots,
+\end{align}
+%
+so at any point we can find the gradient and take a step in the opposite direction, which must decrease $f$. Ex:
+%
+\begin{align}
+	f(w) &= \frac{1}{2} \|X w - y\|_2^2\\
+	\nabla f(w) &= X^T(Xw -y) = X^T (Xw -y) = X^T X w - X^T y,
+\end{align}
+%
+so if we are at some $w_t$ our next step should be
+%
+\begin{align}
+	w_{t+1} &= w_t - \eta X^T(X w_t - y).
+\end{align}
+%
+Examine recursion behavior, find (for optimum $w_\ast$) that
+%
+\begin{align}
+	(w_{t+1} - w_\ast) &= \left(I - \eta X^T X \right)^{t+1} (w_0 - w_\ast),
+\end{align}
+%
+so can bound rate of approach to optimum. (Shocker: need $\eta$ small.)
+
+
+We can do one better by going one step further down the Taylor series,
+%
+\begin{align}
+	f(y) &\approx f(x) + f'(x) (y-x) + \frac{1}{2} f''(x) (y-x)^2
+\end{align}
+%
+make our next step the minimum
+%
+\begin{align}
+	\tilde{y} &= \frac{f'(x)}{f''(x)}
+\end{align}
+
+
+
+
+
 \end{document}
