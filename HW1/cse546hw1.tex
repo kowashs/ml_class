@@ -79,7 +79,18 @@
 
 
 
-	\item Let $(x_1,y_1),\ldots,(x_n,y_n) \in \mathbb{R}^d \times \mathbb{R}$ be drawn from some population. We define $\hat{w} = \argmin_{w} \sum_{i=1}^n (y_i - w^T x_i)^2$. Let $(\tilde{x}_1,\tilde{y}_1),\ldots,(\tilde{x}_m,\tilde{y}_m)$ be test data drawn from the same population. 
+	\item Let $(x_1,y_1),\ldots,(x_n,y_n) \in \mathbb{R}^d \times \mathbb{R}$ be drawn from some population. We define
+	%
+	\begin{align*}
+	\hat{w} = \argmin_{w} \sum_{i=1}^n (y_i - w^T x_i)^2.
+	\end{align*}
+	%
+	Let $(\tilde{x}_1,\tilde{y}_1),\ldots,(\tilde{x}_m,\tilde{y}_m)$ be test data drawn from the same population. We define the training and test losses
+	%
+	\begin{align*}
+		R_\mathrm{tr} &= \frac{1}{n} \sum_{i=1}^n \left(y_i - \hat{w}^T x_i\right)^2,&
+		R_\mathrm{te} &= \frac{1}{m} \sum_{i=1}^n \left(\tilde{y}_i - \hat{w}^T \tilde{x}_i\right)^2.
+	\end{align*}
 \end{enumerate}
 
 \end{document}
