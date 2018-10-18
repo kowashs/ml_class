@@ -37,11 +37,11 @@ def train(X, Y, L): # X is (n,d), Y is (n,k), L is reg. constant
     return np.linalg.solve(M+L*np.identity(d), N)
 
 
-def predict(W,X): # W is (d,k), X is (m,d)
+def predict(W,X,X_mu=0,Y_mu=0): # W is (d,k), X is (m,d), X_mu is (1,d), Y_mu is (1,k)
     m = len(X)
     labels = np.zeros(m)
 
-    Y_pred = np.matmul(X, W)
+    Y_pred = np.matmul(X-X_mu, W) + Y_mu
     for i in range(m):
         labels[i] = np.argmax(Y_pred[i])
 
@@ -94,15 +94,19 @@ H_train = feature_tx(X_train)
 H_val = feature_tx(X_val)
 # H_test = feature_tx(X_test)
 
+H_train_mu = np.mean(H_train,axis=0)
+Y_train_mu = np.mean(Y_train,axis=0)
 
+H_train = H_train - H_train_mu
+Y_train = Y_train - Y_train_mu
 
-# train classifier
+# train classifier on de-meaned features
 W = train(H_train, Y_train, 1e-4)
 
 
 # predict to measure train/validation/test error
-labels_train_pred = predict(W, H_train)
-labels_val_pred = predict(W, H_val)
+labels_train_pred = predict(W, H_train, 0, Y_train_mu) #H_train was already demeaned
+labels_val_pred = predict(W, H_val, H_train_mu, Y_train_mu)
 # labels_test_pred = predict(W, H_test)
 
 train_error = pred_error(labels_train_pred, labels_train)
