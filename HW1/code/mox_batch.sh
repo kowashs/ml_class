@@ -42,10 +42,12 @@
 START=$(date +%s.%N)
 module load anaconda3_4.3.1
 mapfile -t indices < /gscratch/home/kowash/ml_class/HW1/code/index_list
-for p in "${indices[@]}"; do
-    python mnist_ridge.py $p &
+for ((i=0; i < ${#indices[@]}; i+=16)); do
+    for p in "${indices[@]:$i:16}"; do
+        python mnist_ridge.py $p &
+    done
+    wait
 done
-wait
 END=$(date +%s.%N)
 DIFF=$(echo "$END - $START" | bc)
 echo $DIFF
