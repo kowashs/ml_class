@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1539022633 "cse546hw1.tex" "cse546hw1.pdf" "cse546hw1" 1539022633
+["pdflatex"] 1539891059 "cse546hw1.tex" "cse546hw1.pdf" "cse546hw1" 1539891060
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1536122179 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm" 1536122179 1124 14ccf5552bc7f77ca02a8a402bea8bfb ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy8.tfm" 1536122179 1120 200be8b775682cdf80acad4be5ef57e4 ""
@@ -49,6 +49,7 @@
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb" 1536122179 32726 0a1aea6fcd6468ee2cf64d891f5c43c8 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb" 1536122179 34694 ad62b13721ee8eda1dcc8993c8bd7041 ""
   "/usr/share/texmf-dist/fonts/type1/public/mathabx-type1/matha10.pfb" 1536122841 90043 a01ee69dbd537ea8a0835a2b4841a64e ""
+  "/usr/share/texmf-dist/fonts/type1/public/mathabx-type1/matha8.pfb" 1536122841 92536 122d225cdc6105aa1e30a312e405a45c ""
   "/usr/share/texmf-dist/fonts/type1/public/mathabx-type1/mathx10.pfb" 1536122841 70423 0070bb296823c13808887eb0da9c02b4 ""
   "/usr/share/texmf-dist/tex/context/base/mkii/supp-pdf.mkii" 1536122179 71627 94eb9990bed73c364d7f53f960cc8c5b ""
   "/usr/share/texmf-dist/tex/generic/ifxetex/ifxetex.sty" 1536122179 1458 43ab4710dc82f3edeabecd0d099626b2 ""
@@ -106,11 +107,11 @@
   "/usr/share/texmf-dist/web2c/texmf.cnf" 1536122179 33301 a3134070eacafb10b1f371612ce2650d ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1536168739 2756227 3af771b8c7802fcc4de3c67a29c4e776 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1536168732 7908118 92bb0f05de710735ade7b88d3d977323 ""
-  "cse546hw1.aux" 1539022633 766 0b5ef30beba15f217a75df47eadd9d72 ""
-  "cse546hw1.out" 1539022633 68 c6676f32822f0f75e1c9e730411439d1 ""
-  "cse546hw1.tex" 1539022633 1996 67b3116a0b4a4da22706ef9875393dd6 ""
+  "cse546hw1.aux" 1539891060 766 0b5ef30beba15f217a75df47eadd9d72 ""
+  "cse546hw1.out" 1539891060 68 c6676f32822f0f75e1c9e730411439d1 ""
+  "cse546hw1.tex" 1539891059 2649 a046f06bf4f6af9a7aa6e6a5e8413850 ""
   (generated)
-  "cse546hw1.out"
-  "cse546hw1.aux"
-  "cse546hw1.pdf"
   "cse546hw1.log"
+  "cse546hw1.out"
+  "cse546hw1.pdf"
+  "cse546hw1.aux"
