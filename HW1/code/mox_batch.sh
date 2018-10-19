@@ -20,7 +20,7 @@
 
 ## Walltime needed (Days-Hours:Minutes:Seconds)
 
-#SBATCH --time=0-1:30:00
+#SBATCH --time=0-3:00:00
 
 ## Memory per node
 
@@ -42,8 +42,8 @@
 START=$(date +%s.%N)
 module load anaconda3_4.3.1
 mapfile -t indices < /gscratch/home/kowash/ml_class/HW1/code/index_list
-for ((i=0; i < ${#indices[@]}; i+=16)); do
-    for p in "${indices[@]:$i:16}"; do
+for ((i=0; i < ${#indices[@]}; i+=8)); do
+    for p in "${indices[@]:$i:8}"; do
         python mnist_ridge.py $p &
     done
     wait
