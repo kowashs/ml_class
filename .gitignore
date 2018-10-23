@@ -38,3 +38,7 @@ Thumbs.db
 
 videos/*
 slurm*
+load_example.py
+upvote_data.csv
+upvote_features.txt
+upvote_labels.txt
