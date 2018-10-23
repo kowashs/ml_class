@@ -1,0 +1,78 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{bm}
+\usepackage{braket}
+\usepackage{cancel}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{mathabx}
+\usepackage{parskip}
+\usepackage{tensor}
+\usepackage{titlesec}
+\usepackage{titling}
+
+
+
+
+\titlelabel{(\thetitle)\quad}
+\titleformat*{\section}{\large\bfseries}
+\titleformat*{\subsection}{\normalsize\bfseries}
+\setlength{\droptitle}{-5em}
+
+
+
+\let\Re\relax
+\DeclareMathOperator{\Re}{Re}
+\let\Im\relax
+\DeclareMathOperator{\Im}{Im}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\arginf}{arg\,inf}
+\DeclareMathOperator*{\argsup}{arg\,sup}
+
+
+\newcommand{\bhat}[1]{\hat{\bm{#1}}}
+
+
+\renewcommand{\thesubsection}{\normalsize \alph{subsection}}
+\renewcommand{\d}{\mathrm{d}}
+\renewcommand{\vec}[1]{\bm{#1}}
+\newcommand{\del}{\vec{\nabla}}
+\newcommand{\e}{\epsilon}
+\newcommand{\tpd}[3]{\left( \frac{\partial #1}{\partial #2} \right)_{#3}}
+\newcommand{\pd}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\spd}[2]{\frac{\partial^2 #1}{\partial {#2}^2}}
+\def\dbar{{\mathchar'26\mkern-12mu d}}
+
+\allowdisplaybreaks
+
+
+\author{Sam Kowash}
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\title{CSE 546 HW \#2}
+
+\begin{document}
+\maketitle
+\section{A Taste of Learning Theory}
+\begin{enumerate}
+	\item Let $X \in \mathbb{R}^d$ a random feature vector, and $Y \in \{1,\ldots,K\}$ a random label for $K\in \mathbb{N}$ with joint distribution $P_{XY}$. We consider a randomized classifier $\delta(x)$ which maps a value $x\in\mathbb{R}^d$ to some $y \in \{1,\ldots,K\}$ with probability $\alpha(x,y) \equiv P(\delta(x)=y)$ subject to $\sum_{y=1}^K \alpha(x,y) = 1$ for all $x$. The risk of the classifier $\delta$ is
+	%
+	\begin{align*}
+		R(\delta) &\equiv \mathbb{E}_{XY}\left[\bm{1}\{\delta(X) \neq Y\}\right],
+	\end{align*}
+	%
+	which we should interpret as the expected rate of misclassification. A classifier $\delta$ is called deterministic if $\alpha(x,y) \in \{0,1\}$ for all $x,y$. Further, we call a classifier $\delta_\ast$ a Bayes classifier if $\delta_\ast \in \arginf_\delta R(\delta)$.
+
+
+\end{enumerate}
+
+\end{document}
