@@ -35,6 +35,8 @@
 \let\Im\relax
 \DeclareMathOperator{\Im}{Im}
 
+\DeclareMathOperator{\sgn}{sgn}
+
 
 \newcommand{\bhat}[1]{\hat{\bm{#1}}}
 
@@ -239,7 +241,7 @@ Call the objective $J(w)$ (logistic loss): what the hell does it look like? Is i
 
 
 
-\section{Gradient descent}
+\section{Interlude: Gradient descent}
 Recall that our general problem is to be handed i.i.d. data $\{(x_i,y_i)\}_{i=1}^n$ with $x_i \in \mathbb{R}^d$ and $y_i \in \mathbb{R}$, a model with some parameters $w$, and some loss function depending on $w$ to be calculated on our data, then optimize $w$ with respect to that loss. The computational meat is in optimization. We turn it into a problem that looks like $X^T X w = X^T Y$, but how do we actually do that? Lots of different ways! Many algorithms! Some depend on properties of matrices, sparseness, etc. Let's look at one in particular, which is gradient descent.
 
 Say I have some function $f(x)$ where $x \in \mathbb{R}^d$. Taylor tells us that
@@ -286,4 +288,116 @@ make our next step the minimum
 
 
 
+
+
+
+
+
+\section{Perceptron}
+Recall binary classification: we want to learn $f: X \to Y$ with loss $\ell(f(x),y) = \bm{1}\{f(x)\neq y\}$. Expected loss
+%
+\begin{align}
+	\mathbb{E}_{XY} \left[\bm{1}\{f(X)\neq Y\}\right] &= \mathbb{E}_X\left[\mathbb{E}_{Y\mid X} \left[\bm{1}\{f(x) \neq Y\}\mid X=x\right]\right]\\
+	\mathbb{E}_{Y\mid X} \left[\bm{1}\{f(x) \neq Y\}\mid X=x\right] &= 1 - P\left(Y=f(x) \mod X=x\right),
+\end{align}
+%
+so obviously want Bayes classifier
+%
+\begin{align}
+	f(x) &= \argmax_{y} \mathbb{P}\left(Y=y\mid X=x\right),
+\end{align}
+%
+and often take a logistic model like
+%
+\begin{align}
+	P(Y=y\mid x,w) &= \frac{1}{1+ \exp(-yw^T x)}.
+\end{align}
+%
+Buuuuuut it's really hard to know if that model's good. Often probably isn't. Can we do this without a model? Certainly it's not hard to do it with our eyeballs. Can we give our computer eyeballs? Yup!
+
+Say we're classifying to $y \in \{-1,1\}$ and take a linear model where we predict $\sgn(w^T x + b)$. Start with $w_0 = 0, b_0 = 0$, get a data point $x_k$, predict $y_k$, check, and if we were wrong, update
+%
+\begin{align}
+	\begin{bmatrix}w_{k+1}\\b_{k+1}\\\end{bmatrix} &= \begin{bmatrix}w_k\\b_k\\\end{bmatrix} + y_k \begin{bmatrix}x_k\\1\\\end{bmatrix}.
+\end{align}
+%
+Basically we rotate/shift our classification line until we get everything right. Guaranteed to converge if we have linearly separable data! If $\gamma$ is the width of the widest margin (hyperplanar slab separating classes) and feature vector norms are bounded by $\|x_k\| \leq R$, then there is a theorem (Block, Novikoff): if we have a sequence of examples $(x_t,y_t)$, then the number of mistakes made by the perceptron is bounded by $R^2 / \gamma^2$ for \emph{any} such sequence. Convergence is guaranteed and \emph{fast}.
+
+This is pretty dank, but\ldots we can't really do much with it. Most things aren't linearly separable (or even separable at all!), and even a single point in the way of separability can cause infinite cycling and destroy convergence. So why do we care at all? Well, it's a totally different way of thinking about learning! Previously we wrote down a model and then developed an algorithm that optimizes it. Here we did exactly the opposite: wrote down an algorithm and analyzed it. Is there an equivalent modeling problem? What is the perceptron optimizing? Does it have a definable loss function? This all leads to support vector machines (SVMs).
+
+
+
+
+
+\section{Support vector machines}
+The perceptron model admitted many possible classifiers for a given data set, and it liked them all just as well, but we are not so generous. Some seem to skirt very close to the edges of our classes, which feels dangerous, and we'd be more comfortable with a boundary as far from our known data as possible, considering that our data may suffer perturbations on future collections.
+
+How can we pick the ``safest'' classifier? Consider some hyperplane boundary $x^T w + b = 0$ that we've trained, and the closest point $x_0$ to it. How close is it? Let
+%
+\begin{align}
+	\tilde{x}_0 &= \argmin_{z \in \{x : x^T w + b = 0\}} \|z - x_0 \|_2^2
+\end{align}
+%
+be the closest point on the hyperplane to $x_0$. Then
+%
+\begin{align}
+	\|x_0 - \tilde{x}_0\|_2 &= \left\|\frac{w^T}{\|w\|_2} (x_0-\tilde{x}_0)\right\|,
+\end{align}
+%
+but we know that $w^T \tilde{x}_0 = -b$, so
+%
+\begin{align}
+	\|x_0 - \tilde{x}_0\|_2 &= \frac{|w^T x_0 + b|}{\|w\|_2}.
+\end{align}
+%
+So if we now call $\gamma$ the distance from the classification boundary to a parallel hyperplane on either side, our problem is to maximize $\gamma$ over $w$ and $b$ subject to
+%
+\begin{align}
+	\frac{y_i(x_i^T w + b)}{\|w\|_2} &\geq \gamma \qquad \forall i
+\end{align}
+%
+where the sign $y_i$ makes sure we're paying attention to points on both sides of the boundary correctly. This problem ends up being equivalent, however, to the minimization of $\|w\|_2^2$ subject to
+%
+\begin{align}
+	y_i\left(x_i^T w + b\right) & \geq 1 \qquad \forall i,
+\end{align}
+%
+which gives us both our optimal hyperplane and a measure of our separability for free.
+
+
+
+
+However, this still breaks for non-separable data! To make this useful, we need to permit some misclassification or a smaller margin! We implement this as minimizing $w$ subject to
+%
+\begin{align}
+	y_i(x_i^T w + b) &\geq 1 -\xi_i\\
+	\xi_i &\geq 0\\
+	\sum_j \xi_j &< \nu.
+\end{align}
+%
+We now have a knob to trade off between $\nu$ and $\|w\|_2$. The $\xi_i$ are called support vectors (samples on the margin).
+
+Constrained optimization sucks, but as we found with lasso, we have some tricks. Specifically, for any $\nu \geq 0$, there is a $\lambda \geq 0$ such that we can just as well minimize
+%
+\begin{align}
+	\sum_{i=1}^n \max\{0, 1 - y_i(b + x_i^T w)\} + \lambda \|w\|_2^2.
+\end{align}
+
+We're back in machine learning land, now! We have a loss function
+%
+\begin{align}
+	\ell_i(w) &= \max\{0, 1 - y_i x_i^T w\}
+\end{align}
+%
+which we call the \emph{hinge loss} and can optimize by any of the methods we've talked about before. Fact: this is exactly the loss being optimized by the perceptron!
+%
+\begin{align}
+	\nabla_w \ell_i(w,b) &= \left\{
+	\begin{array}{ll}
+		-y_i x_i + \frac{2\lambda}{n} w & \text{if } 1-y_i(b+x^T w) > 0\\
+		\frac{2\lambda}{n} w & \text{otherwise}\\
+	\end{array}\right.	
+\end{align}
+%
+Gradient descent update for this objective is the perceptron with the right parameters!
 \end{document}
