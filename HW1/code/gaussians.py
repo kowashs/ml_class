@@ -26,15 +26,25 @@ for i in range(3):
     
 
     mu_samp = np.sum(X,axis=0)/n
+    print(mu_samp)
     sig_samp = np.matmul(np.transpose(X-mu_samp),X-mu_samp)/(n-1)
     
     evals, evecs = np.linalg.eigh(sig_samp)
-    print(evals)
+    print(evecs[1,1])
+    
+    e1 = evals[np.argmax(evals)]
+    u1 = evecs[:,np.argmax(evals)]
+
+    e2 = evals[np.argmin(evals)]
+    u1 = evecs[:,np.argmin(evals)]
     
     ax.set_xlim((-10,10))
     ax.set_ylim((-10,10))
 
     ax.plot(X[:,0],X[:,1],'^')
+    ax.plot([mu_samp[0],mu_samp[0]+np.sqrt(evals[0])*evecs[0,0]],[mu_samp[1],mu_samp[1]+np.sqrt(evals[0])*evecs[1,0]],lw=3)
+    ax.plot([mu_samp[0],mu_samp[0]+np.sqrt(evals[1])*evecs[0,1]],[mu_samp[1],mu_samp[1]+np.sqrt(evals[1])*evecs[1,1]],lw=3)
     
     ax.set_aspect('equal')
-    plt.show()
+    plt.tight_layout()
+    plt.savefig('../figures/plot_%s.pdf' %i)
