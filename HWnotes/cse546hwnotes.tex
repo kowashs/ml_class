@@ -51,6 +51,10 @@
 \newcommand{\spd}[2]{\frac{\partial^2 #1}{\partial {#2}^2}}
 \def\dbar{{\mathchar'26\mkern-12mu d}}
 
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}[section]
+
 \allowdisplaybreaks
 
 
@@ -329,6 +333,18 @@ This is pretty dank, but\ldots we can't really do much with it. Most things aren
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 \section{Support vector machines}
 The perceptron model admitted many possible classifiers for a given data set, and it liked them all just as well, but we are not so generous. Some seem to skirt very close to the edges of our classes, which feels dangerous, and we'd be more comfortable with a boundary as far from our known data as possible, considering that our data may suffer perturbations on future collections.
 
@@ -399,5 +415,273 @@ which we call the \emph{hinge loss} and can optimize by any of the methods we've
 	\end{array}\right.	
 \end{align}
 %
-Gradient descent update for this objective is the perceptron with the right parameters!
+SGD update for this objective is the perceptron with the right parameters! (The kink in hinge loss is what gives us the ``give up'' behavior in perceptron?) Note that Newton's method does not work on hinge loss, but it has subgradients so SGD still works.
+
+
+Note that logistic regression assumed a data model $\mathbb{P}(Y=y \mid X=x, w)$ that's pretty rigid. It gives us confidence measurements, but how confident are we in our confidence? SVM doesn't force us to assume such a model, so can we extract confidence that we trust from that? Yes! Our SVM predictor gives us a bunch of predictions $y_i = \sgn(w^T x_i)$. Isotonic regression is the fitting of a function to that data that interpolates those predictions (possibly logistic).
+
+
+
+
+
+
+\section{Bootstrap}
+So cross-validation was pretty good technology, but it has downsides, for example throwing out a fifth of our data. The validation error was useful, but the only real statistical power was for constraining the mean via Hoeffding's inequality, which doesn't help with other statistical figures. Further, we get errors for the population, but not really for individual data points. Enter the bootstrap black magicks.
+
+Say we have a dataset $\mathcal{D} = \{z_1,\ldots,z_n\}$ drawn i.i.d from some CDF $F_Z$. We want to compute a statistic $\hat{\theta} = t(\mathcal{D})$ (say the variance). We can calculate the empirical CDF
+%
+\begin{align}
+	\hat{F}_{n,Z}(x) &= \frac{1}{n} \sum_{i=1}^n \bm{1}\left\{z_i \leq x\right\}
+\end{align}
+%
+and we know that $\mathbb{E}\left[\hat{F}_{n,Z}(x)\right] = F_Z(x)$. Say I could get more data: $\{\mathcal{D}_1,\mathcal{D}_2,\ldots,\mathcal{D}_b\}$ from the same distribution. Then I can get a distribution of $\hat{\theta}_i = t(\mathcal{D}_i)$ and can compute stats on stats on stats!
+
+But it's hard to get a bunch of data sets, often! Fortunately we have an estimate of $F_Z(x)$ lying around, which is to say $\hat{F}_{n,Z}(x)$; why not draw our new data sets from that? We know that it will converge toward the true CDF for large $n$. So let's generate $\mathcal{D}^{\ast b} = \{z_1^{\ast b}, \ldots, z_n^{\ast b}\}$ drawn from $\hat{F}_{n,Z}$ with replacement and get $\theta^{\ast b} = t(\mathcal{D}^{\ast b})$ then compute statistics on these $\theta^{\ast b}$, which should be good estimates of the true statistics.
+
+
+What do we do with this? Whatever we want! We can fit a function to some data, then fit 1000 more with bootstrap and get a confidence interval for \emph{every single point}. This is crazy. Caveat: need lots of data. It has powerful asymptotic guarantees, but they don't really become good constraints until big $n$ and it's hard to tell how big is big enough. Further, this can involve a lot of computation if you want tight bounds, and there are statistics that it does not work well for.
+
+
+
+
+
+
+
+
+
+
+
+\section{Decision theory; discriminative vs. generative learning}
+Recall in binary classification, we talked about classifying according to
+%
+\begin{align}
+	f(x) &= \argmax_y \mathbb{P}(Y=y \mid X=x),
+\end{align}
+%
+but it's totally equivalent according to Bayes to look at
+%
+\begin{align}
+	f(x) &= \argmax_y \mathbb{P}(X=x \mid Y=y) \mathbb{P}(Y=y),
+\end{align}
+%
+where we think about the distribution of features given a certain outcome. Need to scale based on probability of outcome to predict!
+
+
+Consider an example where
+%
+\begin{align}
+	\mathbb{P}(X=x) &\equiv (1-\pi) P_0(x) + \pi P_1(x)
+\end{align}
+%
+where $0\leq\pi \leq 1$ and $P_0(x) = \mathcal{N}(x; \mu_0, \sigma^2)$ and $P_1(x) \mathcal{N}(x;\mu_1,\sigma^2)$. The Bayes classifier is
+%
+\begin{align}
+	f(x) = 1 \text{ if } \frac{P_1(x) \pi}{P_0(x) (1-\pi)} \geq 1.
+\end{align}
+%
+This comes out to
+%
+\begin{align}
+	f(x) = 1 \text{ if } x \geq \frac{\mu_1 +\mu_0}{2} - \frac{\sigma^2}{\mu_1 - \mu_0} \log\left(\frac{\pi}{1-\pi}\right).
+\end{align}
+%
+Can see that as $\pi$ grows, decision boundary shifts left, and vice-versa.
+
+This generalizes to more dimensions! If we have Gaussian feature distributions for each class with the same covariance, we will get a hyperplane classification boundary (linear discriminant analysis). If they have different covariances, quadratic boundary (quadratic discriminant analysis).
+
+Say we measure $\{(x_i,y_i)\}_{i=1^n}$, then we get estimates
+%
+\begin{align}
+	\hat{mu}_k &= \frac{1}{|\{i : y_i = k\}} \sum_{i:y_i=k} x_i\\
+	\hat{Sigma}_k &= \frac{1}{|\{i:y_i = k\}|-1} \sum_{i:y_i = k} (x_i - \hat{\mu}_k)(x_i - \hat{\mu}_k)^T.
+\end{align}
+
+So discriminative learning directly attempts to model $\mathbb{P}(Y=y \mid X=x)$ (e.g. SVM, logistic classification), while generative learning goes after $\mathbb{P}(X=x,Y=y) = \mathbb{P}(X=x\mid Y=y) \mathbb{P}(Y=y)$. Is this more work? Yes! But often domain knowledge allows us to do some educated preparation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Hypothesis testing}
+This is\ldots obviously important.
+
+Say that we want to detect anomalous transactions in a credit log. For each transaction we observe some features $X$, and the transaction is either genuine ($Y=0$) or fraudulent ($Y=1$). In the first case $H_0$, $X$ is drawn from a distribution $P_0$ for genuine transactions, and in $H_1$ it is drawn from $P_1$. We want to determine which population our feature vector is drawn from by some (possibly randomized) decision function $\delta(X)$.
+
+In Bayesian hypothesis testing, we assume priors $\mathbb{P}(Y=1) = \pi$ and $\mathbb{P}(Y=0) = (1-\pi)$ and want to minimize $\mathbb{P}_{XY}(Y \neq \delta(X))$. (It turns out that there will always be deterministic dudes that live in this set.) Effectively this is weighting distributions for decision according to priors.
+
+
+We can retune our priorities by instead looking for
+%
+\begin{align}
+	\argmin_\delta \max\{\mathbb{P}(\delta(X) = 0\mid Y=1), \mathbb{P}(\delta(X) =1 \mid Y=0)\},
+\end{align}
+%
+which is known as minimax hypothesis testing.
+
+
+
+There is also Neyman--Pearson hypothesis testing where we choose
+%
+\begin{align}
+	\argmax_\delta \mathbb{P}(\delta(X) = 1 \mid Y=1) \text{ subject to } \mathbb{P}(\delta(X)=1\mid Y=0) \leq \alpha.
+\end{align}
+%
+This maximizes true positives subject to a bounded false alarm rate $\alpha$. The wacky thing is that there is always an optimal test $\delta^\ast$ following
+%
+\begin{align}
+	\mathbb{P}(\delta^\ast(X) =1) &= \left\{\begin{array}{lr}
+		1 & \text{ if } \frac{P_1(x)}{P_0(x)} > \eta\\
+		\gamma & \text{ if } \frac{P_1(x)}{P_0(x)} = \eta\\
+		0 & \text{ if } \frac{P_1(x)}{P_0(x)} < \eta
+	\end{array}\right..
+\end{align}
+%
+such that the false alarm rate is \emph{exactly} $\alpha$.
+
+All hypothesis tests are effectively a trade-off between false alarm rate and detection power. Different algorithms will have different trade-off curves (ROC curves), and we can assess them on this basis.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{p-values}
+We are often confronted with problems where we (hopefully) have a strong model for the null hypothesis distribution, but no real model for non-null hypotheses (e.g. real vs. fraudulent purchases, since fraud is often strategic/adaptive). Can we test here? Yuuuup.
+
+
+
+One definition is that the p-value is the probability of finding data at least as extreme if the null hypothesis is true (that is, $X \sim P_0$). Alternatively, the p-value is a uniform r.v. derived from $X$ in the case that $X \sim P_0$. (And note: \emph{any} such uniform variable. There are many possible definitions!) This second rule will do us more favors. The first might lead us to suspect that a particular $H_1$ is true, and that's very bad.
+
+Say that we have $P_0(x) = \mathcal{N}(x;\mu_0, \sigma^2)$ and observe $x_i \in \mathbb{R}$. The p-value is
+%
+\begin{align}
+	p_i &= P_0(X \geq x_i)\\
+	    &= \int_{x=x_i}^\infty \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu_0)^2}{2\sigma^2}} \d x\\
+	    &= 1 - F\left(\frac{x_i-\mu_0}{\sigma}\right).
+\end{align}
+%
+The correct way to use this information is to pick a threshold (e.g. $\alpha = 0.05$), measure data $x_i$, then calculate $p_i$ (uniform on $[0,1]$ under $H_0$). Then the test is that if $p_i \leq \alpha$, we reject $H_0$. (Or, more generally, we can define any weird rejection region we want, as long as it has measure no greater than $\alpha$.)
+
+
+Note that the uniformity of $p$ under $H_0$ presents a danger: repeated measurements can easily land us in the rejection region by chance! Say we measure $x_i \sim \mathcal{N}(\mu,1)$ each day $i$ and take $H_0: \mu=0$. We can define a running average
+%
+\begin{align}
+	Z_i &= \frac{1}{\sqrt{i}} \sum_{j=1}^i x_j
+\end{align}
+%
+and under $H_0$ we have $Z_i \sim \mathcal{N}(0,1)$ so that we can define a $p$-value
+%
+\begin{align}
+	p_i &= \frac{1}{2\pi} \int_{z=z_i}^\infty e^{-\frac{z^2}{2}} \d z.
+\end{align}
+%
+The danger is that \emph{eventually} we will measure some $p_i \leq \alpha$. If we declare victory here, our stopping time was not independent of our measurements; it is much like tainting our learning process by touching the test data. Caution!
+
+
+
+
+
+
+
+
+
+
+\subsection{Multiple testing}
+Take a genetics example: 13,071 drosophila genes potentially affecting virus replication. Knock out one gene at a time, infect microwell array, count fluorescent signals distributed $x_i \sim \mathcal{N}(\mu_i,1)$ (not actually, but play along).
+
+For each gene $i$, we have a null hypothesis $H_0(i) : \mu_i = 0$, i.e. it plays no role in virus inhibition. Procedure:
+%
+\begin{description}
+	\item[Set:] $\alpha=0.05$
+	\item[Observe:] $x_i \in \mathbb{R}$
+	\item[p-value:] $p_i = P_0(X \geq x_i)$
+	\item[Test:] If $p_i \leq \alpha$, reject $H_0(i)$
+\end{description}
+
+How many genes do we expect to meet the rejection criterion under $H_0$? If $I_0$ is the set of $i$ for which $H_0(i)$ is true,
+%
+\begin{align}
+	\mathbb{E}\left[\sum_{i\in I_0} \bm{1}\{p_i \leq \alpha\}\right] &= \sum_{i \in \mathbb{I}_0} \mathbb{P}(p_i \leq \alpha) = |I_0| \alpha.
+\end{align}
+%
+This is an\ldots alarming rate of false alarms. We can measure this badness by the family-wise error rate (FWER) which is the probability of rejecting any true null. If we adopt the Bonferroni rule (reject $i$ if $p_i \leq \alpha/n$), then
+%
+\begin{align}
+	\mathrm{FWER} &= \mathbb{P}\left(\bigcup_{I_0} \{p_i \leq \frac{\alpha}{n}\}\right)\\
+	&= \leq \sum_{i \in I_0} \mathbb{P}\left(p_i \leq \frac{\alpha}{n}\right)
+	&= \sum_{i \in I_0} \frac{}{}
+\end{align}
+
+
+
+
+This might be a little harsh. Perhaps better to judge by false discovery rate (FDR); we can tolerate a few errors if we get enough true discoveries.
+%
+\begin{align}
+	\mathrm{FDR} &\equiv \mathbb{E}\left[\frac{|I_0 \cap R|}{|R|}\right]
+\end{align}
+%
+where $R$ is the rejection set. There is a procedure called the Benjamini--Hochberg procedure:
+%
+\begin{itemize}
+	\item Sort p-values so that $p_{(1)} \leq p_{(2)} \leq \cdots \leq p_{(n)}$
+	\item $i_\mathrm{max} = \max\left\{i : p_{(i)} \leq \frac{i}{n} \alpha\right\}$
+	\item $R = \{i: i \leq i_\mathrm{max}\}$
+\end{itemize}
+%
+where $R$ is our rejection set. A theorem tells us that $BH(\alpha)$ satisfies $\mathrm{FDR} \leq \alpha$.
+
+
+
+
+
+
+
+
+
+
+
+\section{Bayesian methods}
+Everything we've just been over is pretty classical, nothing really new after 1900. Let's move on a bit. Recall our MLE example about determining the weighting $\theta$ of a coin. Suppose we were told that based on past knowledge the coin is around 50--50, so we have some \emph{prior belief} $P(\theta)$. Bayes sez
+%
+\begin{align}
+	P(\theta \mid \mathcal{D}) &= \frac{P(\mathcal{D}\mid \theta) P(\theta)}{P(\mathcal{D})}.
+\end{align}
+%
+The likelihood function, we know, is the binomial
+%
+\begin{align}
+	P(\mathcal{D} \mid \theta) &= \theta^{\alpha_H} (1- \theta)^{\alpha_T},
+\end{align}
+%
+where $\alpha_H, \alpha_T$ are our drawn data. 
+
+
+
+
+
+
+
+
+
+
+
+
+
 \end{document}
