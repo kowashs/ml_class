@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import numpy as np
 import matplotlib.pyplot as plt
+from datetime import datetime
 from lasso import *
 
 
@@ -37,12 +38,12 @@ ws = []
 bs = []
 
 lam = lam_max
-r = .98
+r = .9
 
 print("Entering loop.")
 while (max(num_feats) if num_feats else 0) < .95*d:
     lams.append(lam)
-    w,b = lasso_descend(X_train, Y_train, (ws[-1] if ws else np.zeros(d)), lam, 1e-5)
+    w,b = lasso_descend(X_train, Y_train, (ws[-1] if ws else np.zeros(d)), lam, 1e-2)
     ws.append(w)
     bs.append(b)
 
@@ -66,7 +67,9 @@ while (max(num_feats) if num_feats else 0) < .95*d:
 
 
 
-with open("data/yelp_sqrt_results", "w") as f:
+ftime = datetime.now().time()
+stamp = f"{ftime[0]:i}_{ftime[1]:i}_{ftime[2]:i}"
+with open(f"data/yelp_sqrt-{stamp}", "w") as f:
     f.writelines([f"{lams[i]:12e} {num_feats[i]:4d} {val_errs[i]:14.6f} {train_errs[i]:14.6f}\n" for i in range(len(lams))])
 
 
