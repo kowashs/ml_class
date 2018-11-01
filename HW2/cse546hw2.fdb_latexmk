@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1540884893 "cse546hw2.tex" "cse546hw2.pdf" "cse546hw2" 1540884894
+["pdflatex"] 1541100968 "cse546hw2.tex" "cse546hw2.pdf" "cse546hw2" 1541100968
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1536122179 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm" 1536122179 1124 14ccf5552bc7f77ca02a8a402bea8bfb ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy8.tfm" 1536122179 1120 200be8b775682cdf80acad4be5ef57e4 ""
@@ -105,13 +105,13 @@
   "/usr/share/texmf-dist/tex/latex/tools/bm.sty" 1536122179 12626 7d9d99d0bbe65f44cc0bb90f67262000 ""
   "/usr/share/texmf-dist/tex/latex/url/url.sty" 1536122179 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "/usr/share/texmf-dist/web2c/texmf.cnf" 1536122179 33301 a3134070eacafb10b1f371612ce2650d ""
-  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1536168739 2756227 3af771b8c7802fcc4de3c67a29c4e776 ""
+  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1540958780 2756227 3af771b8c7802fcc4de3c67a29c4e776 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1536168732 7908118 92bb0f05de710735ade7b88d3d977323 ""
-  "cse546hw2.aux" 1540884894 761 b85be3297bab1043c21e195e9bcdb620 ""
-  "cse546hw2.out" 1540884894 61 ad67cb3fdf8c2f56a4dbdc6759ad8b14 ""
-  "cse546hw2.tex" 1540884893 2974 088aaa32e95a2138b4236e432355f368 ""
+  "cse546hw2.aux" 1541100968 845 8ecafdf139e527567d2f3e22c7be55c5 ""
+  "cse546hw2.out" 1541100968 107 06b3e5a1f1ae4869bce37d45f3437116 ""
+  "cse546hw2.tex" 1541100968 4609 e177ceefe998473e4d0f1ef7bb4b1a23 ""
   (generated)
   "cse546hw2.out"
+  "cse546hw2.pdf"
   "cse546hw2.log"
   "cse546hw2.aux"
-  "cse546hw2.pdf"

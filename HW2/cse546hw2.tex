@@ -94,4 +94,97 @@
 	\item We grab $n$ data samples $(x_i,y_i)$ i.i.d. from $P_{XY}$ where $y_i \in \{-1,1\}$ and $x_i \in \mathcal{X}$ where $\mathcal{X}$ is some set about which we make no further assumptions. 
 \end{enumerate}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Programming}
+\begin{enumerate}
+	\item 
+
+
+
+
+
+
+
+
+
+
+
+
+	\item
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	\item We now consider binary classification between 2s and 7s in the MNIST set via regularized logistic regression. We choose a balanced target set $Y \in \{-1,1\}$, where $Y=-1$ for 2s and $Y = 1$ for 7s, so that our data are $\{(x_i,y_i)\}_{i=1}^n \subset \mathbb{R}^d \times \mathbb{Z}_2$. The $L_2$-regularized negative log likelihood objective to be minimized is
+	%
+	\begin{align*}
+		J(w,b) &= \frac{1}{n} \sum_{i=1}^n \log\left[1 + \exp\left(-y_i(b+x_i^T w)\right)\right] + \lambda \|w\|_2^2.
+	\end{align*}
+	%
+	For convenience, we define the functions
+	%
+	\begin{align*}
+		\mu_i(w,b) &= \frac{1}{1+\exp\left[-y_i(b+x_i^T + w)\right]}.
+	\end{align*}.
+	%
+	\begin{enumerate}
+		\item To do gradient descent, we need to know some gradients. First,
+		\begin{align*}
+			\nabla_w J(w,b) &= \frac{1}{n} \sum_{i=1}^n \frac{-y_i x_i \exp\left[-y_i(b + x_i^T w)\right]}{1 + \exp\left[-y_i(b+x_i^T w)\right]} + 2\lambda w\\
+			\nabla_w J(w,b) &= -\frac{1}{n} \sum_{i=1}^n \mu_i \left(\frac{1}{\mu_i} - 1\right) y_i x_i + 2\lambda w\\
+			\nabla_w J(w,b) &= \frac{1}{n} \sum_{i=1}^n (\mu_i - 1) y_i x_i + 2\lambda w.
+		\end{align*}
+		%
+		Next,
+		%
+		\begin{align*}
+			\nabla_b J(w,b) &= -\frac{1}{n} \sum_{i=1}^n \frac{y_i \exp\left[-y_i(b + x_i^T w)\right]}{1+\exp\left[-y_i(b+x_i^T w)\right]}\\
+			\nabla_b J(w,b) &= \frac{1}{n} \sum_{i=1}^n (\mu_i -1) y_i.
+		\end{align*}
+		%
+		We'll also want some Hessians, for Newton's method.
+		%
+		\begin{align*}
+			\nabla^2_w J(w,b) &= 
+		\end{align*}
+	\end{enumerate}
+\end{enumerate}
 \end{document}
