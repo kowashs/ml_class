@@ -37,10 +37,10 @@ ws = []
 bs = []
 
 lam = lam_max
-r = .5
+r = .9
 
 print("Entering loop.")
-while (max(num_feats) if num_feats else 0) < .9*d:
+while (max(num_feats) if num_feats else 0) < .92*d:
     lams.append(lam)
     w,b = lasso_descend(X_train, Y_train, (ws[-1] if ws else np.zeros(d)), lam, 1e-5)
     ws.append(w)
