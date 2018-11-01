@@ -657,6 +657,11 @@ where $R$ is our rejection set. A theorem tells us that $BH(\alpha)$ satisfies $
 
 
 
+
+
+
+
+
 \section{Bayesian methods}
 Everything we've just been over is pretty classical, nothing really new after 1900. Let's move on a bit. Recall our MLE example about determining the weighting $\theta$ of a coin. Suppose we were told that based on past knowledge the coin is around 50--50, so we have some \emph{prior belief} $P(\theta)$. Bayes sez
 %
@@ -670,7 +675,51 @@ The likelihood function, we know, is the binomial
 	P(\mathcal{D} \mid \theta) &= \theta^{\alpha_H} (1- \theta)^{\alpha_T},
 \end{align}
 %
-where $\alpha_H, \alpha_T$ are our drawn data. 
+where $\alpha_H, \alpha_T$ are our drawn data. There are many options for prior distribution, but some (conjugate priors) are more natural, and for a binomial likelihood we want to take
+%
+\begin{align}
+	P(\theta) &= \frac{\theta^{\beta_H - 1} (1-\theta)^{\beta_T-1}}{B(\beta_H,\beta_T)} \sim \mathrm{Beta}(\beta_H,\beta_T),
+\end{align}
+%
+can be shown to have
+%
+\begin{align}
+	\mathrm{mean} &= \frac{\beta_H}{\beta_H + \beta_T}\\
+	\mathrm{mode} &= \frac{\beta_H - 1}{\beta_H + \beta_T - 2},
+\end{align}
+%
+while variance is narsty. Very tunable distribution. It is convenient (conjugate) because when we have a binomial likelihood and beta prior, the posterior distribution will \emph{also} be beta! 
+%
+\begin{align}
+	P(\theta\mid \mathcal{D}) &\propto \theta^{k+\beta_H-1} (1-\theta)^{n-k+\beta_T-1} = \mathrm{Beta}(k+\beta_H, n-k+\beta_T)
+\end{align}
+%
+if we measured $k$ heads and $(n-k)$ tails. We just update parameters according to data! We now have an inference rule: update our posterior, then make estimates like
+%
+\begin{align}
+	\mathbb{E}[\theta] &= \int_0^1 \theta P(\theta\mid\mathcal{D}) \d \theta\\
+	\mathbb{E}[f(\theta)] &= \int_0^1 f(\theta) P(\theta\mid\mathcal{D}) \d \theta,
+\end{align}
+%
+and more complicated statistics! We have a full distribution estimate based on data. This said, these integrals might be super difficult.
+
+Alternative: maximum \emph{a posteriori} approximation (MAP)!
+%
+\begin{align}
+	\hat{\theta}_{\mathrm{MAP}} &= \argmax_\theta P(\theta \mid \mathcal{D})\\
+	\mathbb{E}[f(\theta)] &\approx f(\hat{\theta}).
+\end{align}
+%
+In the coin-flip example,
+%
+\begin{align}
+	\hat{\theta} &= \frac{k + \beta_H - 1}{n - k + \beta_T - 1}.
+\end{align}
+
+
+
+
+Let's take a moment to think about the foundational differences between frequentist stats (which we've been doing) and Bayesian (which we're doing now). In the frequentist perspective, we treat $\theta$ as a fixed hidden parameter to be estimated, and the data we draw as random and controlled by $\theta$. However, Bayesians would say that our data is our data is \emph{the} and we should not expect that there is some ``true'' model out there with fixed parameters. Instead, we should think about the distribution of $\theta$ compatible with the data observed. (There are some flame wars.)
 
 
 
@@ -682,6 +731,55 @@ where $\alpha_H, \alpha_T$ are our drawn data.
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Nearest neighbor}
+Say we have some gnarly decision problem. The Bayes decision boundary may be real jacked up. How do we capture that? We only know about linear decision boundaries with various degrees of flexibility (e.g. SVM). Very low variance, but ridiculous bias. Usually wrong for any interesting boundary.
+
+Let's go to the other end: nearest neighbor classification. Take a point in the domain, look at the $n$ (say 15? 1? 600?) nearest data points and ask them for a majority vote. Whoever wins, wins the point. Repeat until satisfied. Smaller number of neighbors makes very fragmented boundary, hard to trust. Great training error (``you're just classifying yourself''), but abysmal test error. Too many neighbors makes both pretty bad. We also have several choices for what we mean by distance.
+
+If we draw some $\{(x_i,y_i)\}_{i=1}^n \subset \mathbb{R}^d \times \{1,\ldots,k\}$ and assume that as $n \to \infty$ the $x_i$ become dense in $\mathbb{R}^d$ and that $\mathbb{P}(Y=j\mid X=x)$ is smooth, then it is guaranteed that the 1-NN error rate is
+%
+\begin{align}
+	\mathbb{P}(Y_a \neq Y_b) &= \sum_{\ell=1}^k \mathbb{P}(Y_a = \ell, Y_b \neq \ell) = \sum_{\ell=1}^k p_\ell(1-p_\ell) \leq 2 (1-p_{\ell^\ast}) - \frac{k}{k-1} (1-p_{\ell^\ast})^2,
+\end{align}
+%
+which in the last step we see is bounded by twice the Bayes error. This is cool!
+
+Unfortunately, the density assumption is crippling. In high dimension, the expected distance to the nearest neighbor stays pretty big even for big data. It's likely for all of our data to be in the ``corners'' of the domain; everything is far from everything. This is scary for local methods, called the ``curse of dimensionality.''
+
+Still, in low dimension it's perfectly fine, and we can of course do regression with this, too; just average up nearby points and predict the middle. Can improve by weighting average according to some smoothing kernel, or doing local linear regression. All v. effective in low dimension, though potentially computationally expensive: it's hard to \emph{find} nearest neighbors in the first place!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Kernel hijinks}
 
 
 \end{document}
