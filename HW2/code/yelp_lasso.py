@@ -37,10 +37,10 @@ ws = []
 bs = []
 
 lam = lam_max
-r = .9
+r = .95
 
 print("Entering loop.")
-while (max(num_feats) if num_feats else 0) < .92*d:
+while (max(num_feats) if num_feats else 0) < .95*d:
     lams.append(lam)
     w,b = lasso_descend(X_train, Y_train, (ws[-1] if ws else np.zeros(d)), lam, 1e-5)
     ws.append(w)
@@ -67,7 +67,7 @@ while (max(num_feats) if num_feats else 0) < .92*d:
 
 
 with open("data/yelp_results", "w") as f:
-    f.writelines([f"{lams[i]:10e} {num_feats[i]:6d} {val_errs[i]:8.2f} {train_errs[i]:8.2f}\n" for i in range(len(lams))])
+    f.writelines([f"{lams[i]:12e} {num_feats[i]:4d} {val_errs[i]:14.6f} {train_errs[i]:14.6f}\n" for i in range(len(lams))])
 
 
 
