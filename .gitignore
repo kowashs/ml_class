@@ -36,6 +36,10 @@
 ehthumbs.db
 Thumbs.db
 
+__pycache__/*
+
+
+
 videos/*
 slurm*
 load_example.py
