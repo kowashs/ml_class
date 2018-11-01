@@ -9,9 +9,11 @@ def descend_step(X, Y, w_curr, lam):
     b = np.mean(Y - np.matmul(X,np.transpose(w)))
 
     for k in range(d):
-        slice_ind = np.where(np.arange(d) != k)[0]
+        wk = np.copy(w)
+        wk[k] = 0 #faster way to knock out a column
+
         a = 2*np.matmul(X[:,k], X[:,k])
-        c = 2*np.matmul(X[:,k], Y - b - np.matmul(X[:,slice_ind], np.transpose(w[slice_ind])))
+        c = 2*np.matmul(X[:,k], Y - b - np.matmul(X, np.transpose(wk)))
 
         if np.abs(c) <= lam:
             w[k] = 0
@@ -30,11 +32,12 @@ def lasso_descend(X, Y, w_init, lam, thresh):
         print("Initial guess dimension mismatch. Setting all zeros.")
         w_init = np.zeros(d)
     
-
+    
     #do at least one step
     w_last = w_init
     w_curr = descend_step(X, Y, w_init, lam)
-
+    
+    
     while np.max(np.abs(w_curr-w_last)) > thresh:
         w_last = w_curr
         w_curr = descend_step(X, Y, w_curr, lam)
