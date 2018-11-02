@@ -91,7 +91,29 @@
 
 
 
-	\item We grab $n$ data samples $(x_i,y_i)$ i.i.d. from $P_{XY}$ where $y_i \in \{-1,1\}$ and $x_i \in \mathcal{X}$ where $\mathcal{X}$ is some set about which we make no further assumptions. 
+
+
+
+
+
+	\item Suppose we grab $n$ data samples $(x_i,y_i)$ i.i.d. from $P_{XY}$ where $y_i \in \{-1,1\}$ and $x_i \in \mathcal{X}$ where $\mathcal{X}$ is some set. Let $f: \mathcal{X} \to \{-1,1\}$ be a deterministic classifier with true risk
+	%
+	\begin{align*}
+		R(f) &= \mathbb{E}_{XY}\left[\bm{1}(f(X) \neq Y)\right].
+	\end{align*}
+	%
+	and empirical risk
+	%
+	\begin{align*}
+		\hat{R}_n(f) &= \frac{1}{n} \sum_{i=1}^n \bm{1}(f(x_i) \neq y_i).
+	\end{align*}
+
+
+
+
+	\begin{enumerate}
+		\item We wish to estimate the true risk of some classifier $\tilde{f}$. If we -
+	\end{enumerate}
 \end{enumerate}
 
 
@@ -162,7 +184,7 @@
 	For convenience, we define the functions
 	%
 	\begin{align*}
-		\mu_i(w,b) &= \frac{1}{1+\exp\left[-y_i(b+x_i^T + w)\right]}.
+		\mu_i(w,b) &= \frac{1}{1+\exp\left[-y_i(b+x_i^T w)\right]}.
 	\end{align*}.
 	%
 	\begin{enumerate}
@@ -183,7 +205,18 @@
 		We'll also want some Hessians, for Newton's method.
 		%
 		\begin{align*}
-			\nabla^2_w J(w,b) &= 
+			\nabla^2_w J(w,b) &= \frac{1}{n} \sum_{i=1}^n y_i (\nabla_w \mu_i) x_i^T + 2\lambda I_d\\
+			\nabla_w \mu_i &= \frac{y_i x_i \exp\left[-y_i(b+x_i^T w)\right]}{\left(1+\exp\left[-y_i(b+x_i^T w)\right]\right)^2} = \mu_i^2 \left(\frac{1}{\mu_i} - 1\right) y_i x_i = \mu_i (1- \mu_i) y_i x_i\\
+			%
+			\nabla^2_w J(w,b) &= \frac{1}{n} \sum_{i=1}^n \mu_i (1-\mu_i) y_i^2 x_i x_i^T + 2 \lambda I_d
+		\end{align*}
+		%
+		Lastly,
+		%
+		\begin{align*}
+			\nabla^2_b J(w,b) &= \frac{1}{n} \sum_{i=1}^n (\nabla_b \mu_i) y_i\\
+			\nabla_b \mu_i &= \frac{y_i \exp\left[-y_i(b+x_i^T w)\right]}{\left(1+\exp\left[-y_i(b+x_i^T w)\right]\right)^2} = \mu_i(1-\mu_i)y_i\\
+			\nabla^2_b J(w,b) &= \frac{1}{n} \sum_{i=1}^n \mu_i(1-\mu_i) y_i^2.
 		\end{align*}
 	\end{enumerate}
 \end{enumerate}
