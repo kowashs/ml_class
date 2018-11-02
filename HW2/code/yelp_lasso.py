@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 from datetime import datetime
 from lasso import *
 
@@ -38,18 +39,20 @@ ws = []
 bs = []
 
 lam = lam_max
-r = .9
+r = float(sys.argv[1])
 
-print("Entering loop.")
-while (max(num_feats) if num_feats else 0) < .95*d:
+it = 0
+while (max(num_feats) if num_feats else 0) < .9*d:
+    it += 1
+    print(f"On iter {it} with {num_feats[-1] if num_feats else 0} features and lambda={lam:5e}")
     lams.append(lam)
-    w,b = lasso_descend(X_train, Y_train, (ws[-1] if ws else np.zeros(d)), lam, 1e-2)
+    w,b = lasso_descend(X_train, Y_train, (ws[-1] if ws else np.zeros(d)), lam, 5e-2)
     ws.append(w)
     bs.append(b)
 
 
-    val_pred = np.matmul(X_val, np.transpose(w)) + b
-    train_pred = np.matmul(X_train, np.transpose(w)) + b
+    val_pred = np.matmul(X_val,w) + b
+    train_pred = np.matmul(X_train, w) + b
 
     val_diff = val_pred - Y_val 
     train_diff = train_pred - Y_train
@@ -61,7 +64,6 @@ while (max(num_feats) if num_feats else 0) < .95*d:
     num_feats.append(feats)
     val_errs.append(val_err)
     train_errs.append(train_err)
-#   print(f"{lam:12e} {feats:4d} {val_err:14.6f} {train_err:14.6f}")
 
     lam *= r
 

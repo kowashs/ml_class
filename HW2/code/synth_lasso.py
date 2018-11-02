@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 from datetime import datetime
 from lasso import *
+
+
+
 
 
 n = 500
@@ -19,12 +23,14 @@ lam_max = np.max(2*np.abs(np.matmul(Y_train - np.mean(Y_train), X_train)))
 
 
 lams = []
+ws = []
 num_feats = []
 tprs = []
 fdrs = []
 xdrs = []
 lam = lam_max
-r = .95
+
+r = float(sys.argv[1])
 
 
 it = 0
@@ -32,7 +38,7 @@ while (max(num_feats) if num_feats else 0) < d:
     it += 1
     print(f"On iter {it} with {num_feats[-1] if num_feats else 0} features and lambda={lam:.5f}")
     lams.append(lam)
-    w = lasso_descend(X_train, Y_train, np.zeros(d), lam, 1e-3)[0]
+    w = lasso_descend(X_train, Y_train, ws[-1] if ws else np.zeros(d), lam, 1e-3)[0]
 
     total_feats = np.count_nonzero(w)
     true_feats = np.count_nonzero(np.logical_and(w != 0, w_true != 0))
@@ -44,6 +50,7 @@ while (max(num_feats) if num_feats else 0) < d:
     num_feats.append(total_feats)
     tprs.append(true_feats/k)
     fdrs.append(false_feats/total_feats if total_feats != 0 else 0)
+    ws.append(w)
     lam *= r 
 
 lams = np.array(lams)
