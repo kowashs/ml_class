@@ -24,12 +24,15 @@ tprs = []
 fdrs = []
 xdrs = []
 lam = lam_max
-r = .9
+r = .95
 
+
+it = 0
 while (max(num_feats) if num_feats else 0) < d:
-    print(max(num_feats) if num_feats else 0)
+    it += 1
+    print(f"On iter {it} with {num_feats[-1] if num_feats else 0} features and lambda={lam:.5f}")
     lams.append(lam)
-    w = lasso_descend(X_train, Y_train, np.zeros(d), lam, 1e-2)[0]
+    w = lasso_descend(X_train, Y_train, np.zeros(d), lam, 1e-3)[0]
 
     total_feats = np.count_nonzero(w)
     true_feats = np.count_nonzero(np.logical_and(w != 0, w_true != 0))
@@ -50,6 +53,6 @@ fdrs = np.array(fdrs)
 
 
 ftime = datetime.now().time()
-stamp = f"{ftime[0]:i}_{ftime[1]:i}_{ftime[2]:i}"
-with open(f'synth-{stamp}','w') as f:
-    f.writelines([f'{lams[i]:12e} {num_feats[i]:4d} {tprs[i]:14.8f} {fdrs[i]:14.8f}\n" for i in range(len(lams))])
+stamp = f"{ftime.hour:02d}_{ftime.minute:02d}_{ftime.second:02d}"
+with open(f'data/synth-{stamp}','w') as f:
+    f.writelines([f"{lams[i]:12e} {num_feats[i]:4d} {tprs[i]:14.8f} {fdrs[i]:14.8f}\n" for i in range(len(lams))])

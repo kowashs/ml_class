@@ -68,7 +68,7 @@ while (max(num_feats) if num_feats else 0) < .95*d:
 
 
 ftime = datetime.now().time()
-stamp = f"{ftime[0]:i}_{ftime[1]:i}_{ftime[2]:i}"
+stamp = f"{ftime.hour:02d}_{ftime.minute:02d}_{ftime.second:02d}"
 with open(f"data/yelp_sqrt-{stamp}", "w") as f:
     f.writelines([f"{lams[i]:12e} {num_feats[i]:4d} {val_errs[i]:14.6f} {train_errs[i]:14.6f}\n" for i in range(len(lams))])
 
