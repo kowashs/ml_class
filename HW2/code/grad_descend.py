@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# grad_descend.py
 import numpy as np
 import matplotlib.pyplot as plt
 from mnist import MNIST
@@ -77,9 +78,11 @@ def gdescend(X_train, Y_train, X_test, Y_test, lam=0.1, eta = 0.4, tol = 1e-4):
     print(f"Step {i}")
     
     
-    while (len(j_train) < 2 or (np.abs(j_train[-1]-j_train[-2]) if len(j_train) > 1 else 0) > tol):
+    while (len(j_train) < 2 or
+           (np.abs(j_train[-1]-j_train[-2]) if len(j_train) > 1 else 0) > tol):
         i += 1
-        print(f"Step {i}: delta = {(np.abs(j_train[-1]-j_train[-2]) if len(j_train) > 1 else 0)}")
+        print(f"Step {i}: delta = {(np.abs(j_train[-1]-j_train[-2]) "
+              f"if len(j_train) > 1 else 0)}")
         gb = grad_b(mu_train, X_train, Y_train, w, lam)
         gw = grad_w(mu_train, X_train, Y_train, w, lam)
         
@@ -126,9 +129,11 @@ def sgdescend(X_train, Y_train, X_test, Y_test, batch, lam=0.1, eta=0.4, tol=1e-
     print(f"Step {i}")
     
     
-    while (len(j_train) < 2 or (np.abs(j_train[-1]-j_train[-2]) if len(j_train) > 1 else 0) > tol):
+    while (len(j_train) < 2 or
+           (np.abs(j_train[-1]-j_train[-2]) if len(j_train) > 1 else 0) > tol):
         i += 1
-        print(f"Step {i}: delta = {(np.abs(j_train[-1]-j_train[-2]) if len(j_train) > 1 else 0)}")
+        print(f"Step {i}: delta = {(np.abs(j_train[-1]-j_train[-2]) "
+              f"if len(j_train) > 1 else 0)}")
 
         batch_ind = np.random.randint(0,n_train,batch)
         X_batch = X_train[batch_ind]
@@ -177,16 +182,21 @@ Y_test = np.array([codes[i] for i in labels_test])
 
 
 if sys.argv[1] == 'gd':
-    j_train,j_test,e_train,e_test = gdescend(X_train, Y_train, X_test, Y_test, eta=float(sys.argv[2]))
+    j_train,j_test,e_train,e_test = gdescend(X_train, Y_train, X_test, Y_test,
+                                             eta=float(sys.argv[2]))
     now = datetime.now().time()
     stamp = f"{now.hour:02d}_{now.minute:02d}_{now.second:02d}"
-    np.savez(f'data/gdescent-{stamp}', j_train=j_train, j_test=j_test, e_train=e_train, e_test=e_test)
+    np.savez(f'data/gdescent-{stamp}', j_train=j_train, j_test=j_test,
+             e_train=e_train, e_test=e_test)
 
 elif sys.argv[1] == 'sgd':
-    j_train,j_test,e_train,e_test = sgdescend(X_train, Y_train, X_test, Y_test, eta=float(sys.argv[2]), batch=int(sys.argv[3]))
+    j_train,j_test,e_train,e_test = sgdescend(X_train, Y_train, X_test,
+                                              Y_test, eta=float(sys.argv[2]),
+                                              batch=int(sys.argv[3]))
     now = datetime.now().time()
     stamp = f"{now.hour:02d}_{now.minute:02d}_{now.second:02d}"
-    np.savez(f'data/sgdescent-{sys.argv[3]}-{stamp}', j_train=j_train, j_test=j_test, e_train=e_train, e_test=e_test)
+    np.savez(f'data/sgdescent-{sys.argv[3]}-{stamp}', j_train=j_train,
+             j_test=j_test, e_train=e_train, e_test=e_test)
 
 
 

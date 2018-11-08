@@ -17,6 +17,7 @@
 \usepackage{tensor}
 \usepackage{titlesec}
 \usepackage{titling}
+\usepackage{listings}
 
 
 
@@ -62,6 +63,9 @@
 
 \begin{document}
 \maketitle
+
+{\bf Acknowledgments:} I collaborated on parts of this homework with Tyler Blanton, Michael Ross, and Nick Ruof.
+
 \section{A Taste of Learning Theory}
 \begin{enumerate}
 	\item Let $X \in \mathbb{R}^d$ a random feature vector, and $Y \in \{1,\ldots,K\}$ a random label for $K\in \mathbb{N}$ with joint distribution $P_{XY}$. We consider a randomized classifier $\delta(x)$ which maps a value $x\in\mathbb{R}^d$ to some $y \in \{1,\ldots,K\}$ with probability $\alpha(x,y) \equiv P(\delta(x)=y)$ subject to $\sum_{y=1}^K \alpha(x,y) = 1$ for all $x$. The risk of the classifier $\delta$ is
@@ -114,6 +118,7 @@
 	\begin{enumerate}
 		\item We wish to estimate the true risk of some classifier $\tilde{f}$. If we -
 	\end{enumerate}
+
 \end{enumerate}
 
 
@@ -143,7 +148,17 @@
 \section{Programming}
 \begin{enumerate}
 	\item 
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=0.6\textwidth]{figures/synth_nfeats_80.pdf}
+			\caption{Number of nonzero features vs. $\lambda$ for lasso on synthetic data}
+		\end{figure}
 
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=0.6\textwidth]{figures/synth_fdr-tpr_80.pdf}
+			\caption{TPR vs. FDR for lasso on synthetic data}-
+		\end{figure}
 
 
 
@@ -156,10 +171,20 @@
 
 
 	\item
+	    
 
+	Optimal $\lambda$ was near 1.11.
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=.6\textwidth]{figures/yelp_errs.pdf}
+			\caption{Validation and training error vs $\lambda$ on Yelp data}
+		\end{figure}
 
-
-
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=.6\textwidth]{figures/yelp_nfeats.pdf}
+			\caption{Number of nonzero features vs. $\lambda$ on Yelp data}
+		\end{figure}
 
 
 
@@ -220,4 +245,30 @@
 		\end{align*}
 	\end{enumerate}
 \end{enumerate}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\clearpage
+\lstinputlisting[language=Python]{code/lasso.py}
+\clearpage
+\lstinputlisting[language=Python]{code/synth_lasso.py}
+\clearpage
+\lstinputlisting[language=Python]{code/yelp_lasso.py}
+\clearpage
+\lstinputlisting[language=Python]{code/grad_descend.py}
+
+
+
 \end{document}

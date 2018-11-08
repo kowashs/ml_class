@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# yelp_lasso.py
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
@@ -44,9 +45,11 @@ r = float(sys.argv[1])
 it = 0
 while (max(num_feats) if num_feats else 0) < .9*d:
     it += 1
-    print(f"On iter {it} with {num_feats[-1] if num_feats else 0} features and lambda={lam:5e}")
+    print(f"On iter {it} with {num_feats[-1] if num_feats else 0} "
+          f"features and lambda={lam:5e}")
     lams.append(lam)
-    w,b = lasso_descend(X_train, Y_train, (ws[-1] if ws else np.zeros(d)), lam, 5e-2)
+    w,b = lasso_descend(X_train, Y_train, (ws[-1] if ws else np.zeros(d)),
+                        lam, 5e-2)
     ws.append(w)
     bs.append(b)
 
@@ -72,7 +75,8 @@ while (max(num_feats) if num_feats else 0) < .9*d:
 ftime = datetime.now().time()
 stamp = f"{ftime.hour:02d}_{ftime.minute:02d}_{ftime.second:02d}"
 with open(f"data/yelp_sqrt-{stamp}", "w") as f:
-    f.writelines([f"{lams[i]:12e} {num_feats[i]:4d} {val_errs[i]:14.6f} {train_errs[i]:14.6f}\n" for i in range(len(lams))])
+    f.writelines([f"{lams[i]:12e} {num_feats[i]:4d} {val_errs[i]:14.6f} "
+                  f"{train_errs[i]:14.6f}\n" for i in range(len(lams))])
 
 
 
