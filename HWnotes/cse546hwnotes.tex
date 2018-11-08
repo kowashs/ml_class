@@ -27,8 +27,12 @@
 \titleformat*{\subsection}{\normalsize\bfseries}
 \setlength{\droptitle}{-5em}
 
+
+
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\argmax}{arg\,max}
+
+\DeclareMathOperator{\tr}{tr}
 
 \let\Re\relax
 \DeclareMathOperator{\Re}{Re}
@@ -50,10 +54,14 @@
 \newcommand{\pd}[2]{\frac{\partial #1}{\partial #2}}
 \newcommand{\spd}[2]{\frac{\partial^2 #1}{\partial {#2}^2}}
 \def\dbar{{\mathchar'26\mkern-12mu d}}
+\newcommand{\R}{\mathbb{R}}
 
 
 \theoremstyle{definition}
 \newtheorem{defn}{Definition}[section]
+
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
 
 \allowdisplaybreaks
 
@@ -878,4 +886,95 @@ We made a \emph{truncated} feature map which approximates the true kernel we wan
 
 
 \section{Principal component analysis}
+Overall idea is low-dimensional representation of high-dimensional stuff. Given $x_1,\ldots,x_n \in \R^d$ we want to find some $\lambda_1,\ldots,\lambda_n \in \R^q$ with $q \ll d$ such that $x_i \sim \mu + V_q \lambda_i$ where $V_q^T V_q = I_q$. To be more precise, we want to find $\mu$, $V_q$, and $\{\lambda_i\}$ attaining
+%
+\begin{align}
+	\min_{\mu,V_q,\{\lambda_i\}} \sum_{i=1}^n \|x_i - \mu - V_q\lambda_i\|_2^2.
+\end{align}
+%
+If we fix $V_q$, we find
+%
+\begin{align}
+	\mu = \bar{x} &= \frac{1}{n} \sum_{i=1}^n x_i\\
+	\lambda &= V_q^T (x_i - \bar{x})
+\end{align}
+%
+and so are left to determine
+%
+\begin{align}
+	\min_{V_q} \sum_{i=1}^n \|(x_i-\bar{x}) - V_q V_q^T (x_i - \bar{x})\|_2^2.
+\end{align}
+%
+If we recall
+%
+\begin{align}
+	\Sigma &= \sum_{i=1}^n (x_i-\bar{x})(x_i-\bar{x})^T,
+\end{align}
+%
+then we see that
+%
+\begin{align}
+	\min_{V_q} \sum_{i=1}^n \|(x_i-\bar{x}) - V_q V_q^T (x_i-\bar{x})\|_2^2 &= \min_{V_q} \left[\tr \Sigma - \tr V_q^T \Sigma V_q\right].
+\end{align}
+%
+By eigenvalue decomposition of $\Sigma$, we can find that this minimum is achieved if we make the columns of $V_q$ the eigenvectors of $\Sigma$ with the $q$ biggest corresponding eigenvalues. Essentially, we are picking out the directions with the most variance and projecting our data down into them for legibility.
+%
+\begin{align}
+	(X - \bm{1}\bar{x}^T) V_q &= U_q S_q
+\end{align}
+%
+where $U_q$ is orthogonal and $S_q$ is a weight matrix, essentially. Why can we do this? Singular value decomposition!
+
+
+\begin{thm}[SVD]
+	Let $A \in \R^{m\times n}$ with rank $r \leq \min\{m,n\}$. Then $A = USV^T$ where $S \in \R^{r\times r}$ is diagonal, $U^T U = I_m$ and $V^T V = I_n$.
+\end{thm}
+
+Why do we care? Well, for $v_i$ a column of $V$,
+%
+\begin{align}
+	A^T A v_i &= (USV^T)^T(USV^T)v_i = V S U^T U S V^T v_i = V S^2 V^T v_i,
+\end{align}
+%
+and since columns of $V$ are orthonormal,
+%
+\begin{align}
+	A^T A v_i &= V S^2 e_i = S_{ii}^2 V e_i = S_{ii}^2 v_i,
+\end{align}
+%
+so we see that $v_i$ is an eigenvector of $A^T A$ with positive eigenvalue $S_{ii}^2$. A similar calculation for a column $u_i$ of $U$ shows that such columns are eigenvectors of $A A^T$ also with eigenvalues $S_{ii}^2$. (Compute eigenvalues of $A A^T$ or $A^T A$, whichever is smaller.)
+
+
+
+
+
+
+
+
+\section{SVD tricks}
+Recall ridge regression, where
+%
+\begin{align}
+	\hat{y} &= X (X^T X + \lambda I)^{-1} X^T y.
+\end{align}
+%
+Consider SVD of $X$ and see that
+%
+\begin{align}
+	\hat{y} &= \sum_{i=1}^d u_i u_i^T \frac{s_i^2}{s_i^2 + \lambda} y_i.
+\end{align}
+%
+Notice that the fraction is nearly zero for $s_i^2 \ll \lambda$ and nearly unity for $s_i^2 \gg \lambda$, which reflects ridge regression's preference for high-variance directions to spend its limited predictor magnitude on.
+
+
+
+
+
+
+
+
+
+
+
+
 \end{document}

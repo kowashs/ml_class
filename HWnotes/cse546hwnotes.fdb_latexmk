@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1541536949 "cse546hwnotes.tex" "cse546hwnotes.pdf" "cse546hwnotes" 1541536949
+["pdflatex"] 1541708125 "cse546hwnotes.tex" "cse546hwnotes.pdf" "cse546hwnotes" 1541708125
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1536122179 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm" 1536122179 1124 14ccf5552bc7f77ca02a8a402bea8bfb ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy8.tfm" 1536122179 1120 200be8b775682cdf80acad4be5ef57e4 ""
@@ -111,12 +111,12 @@
   "/usr/share/texmf-dist/web2c/texmf.cnf" 1536122179 33301 a3134070eacafb10b1f371612ce2650d ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1541384450 2756227 3af771b8c7802fcc4de3c67a29c4e776 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1536168732 7908118 92bb0f05de710735ade7b88d3d977323 ""
-  "cse546hwnotes.aux" 1541536949 2858 1a7f8349b7f021795f6c6aa3e60b2402 ""
-  "cse546hwnotes.out" 1541536949 794 e39a9fbdfe8a6e475d982bf83b3f7441 ""
-  "cse546hwnotes.tex" 1541536948 36528 b9f3bdc2129249429710a7bf4ddc3ae6 ""
+  "cse546hwnotes.aux" 1541708125 2858 48c9a3bc3e9312a5ac7d11155fd593ec ""
+  "cse546hwnotes.out" 1541708125 794 e39a9fbdfe8a6e475d982bf83b3f7441 ""
+  "cse546hwnotes.tex" 1541708125 38317 52d797e8c474a0a6c8f74bad72148613 ""
   "figures/lasso_v_ridge.png" 1539284241 33221 87c15721a75d3e48247da7cf736aa741 ""
   (generated)
   "cse546hwnotes.aux"
-  "cse546hwnotes.out"
   "cse546hwnotes.pdf"
   "cse546hwnotes.log"
+  "cse546hwnotes.out"
