@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1541100574 "cse546hwnotes.tex" "cse546hwnotes.pdf" "cse546hwnotes" 1541100574
+["pdflatex"] 1541536949 "cse546hwnotes.tex" "cse546hwnotes.pdf" "cse546hwnotes" 1541536949
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1536122179 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm" 1536122179 1124 14ccf5552bc7f77ca02a8a402bea8bfb ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy8.tfm" 1536122179 1120 200be8b775682cdf80acad4be5ef57e4 ""
@@ -109,14 +109,14 @@
   "/usr/share/texmf-dist/tex/latex/tools/bm.sty" 1536122179 12626 7d9d99d0bbe65f44cc0bb90f67262000 ""
   "/usr/share/texmf-dist/tex/latex/url/url.sty" 1536122179 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "/usr/share/texmf-dist/web2c/texmf.cnf" 1536122179 33301 a3134070eacafb10b1f371612ce2650d ""
-  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1540958780 2756227 3af771b8c7802fcc4de3c67a29c4e776 ""
+  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1541384450 2756227 3af771b8c7802fcc4de3c67a29c4e776 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1536168732 7908118 92bb0f05de710735ade7b88d3d977323 ""
-  "cse546hwnotes.aux" 1541100574 2664 266d8f2298d70b8d6a886b3851e2511c ""
-  "cse546hwnotes.out" 1541100574 678 120add678d678190c28e4616361882e3 ""
-  "cse546hwnotes.tex" 1541100573 31694 9c5572e9726e09ca4380ac9d4515fb22 ""
+  "cse546hwnotes.aux" 1541536949 2858 1a7f8349b7f021795f6c6aa3e60b2402 ""
+  "cse546hwnotes.out" 1541536949 794 e39a9fbdfe8a6e475d982bf83b3f7441 ""
+  "cse546hwnotes.tex" 1541536948 36528 b9f3bdc2129249429710a7bf4ddc3ae6 ""
   "figures/lasso_v_ridge.png" 1539284241 33221 87c15721a75d3e48247da7cf736aa741 ""
   (generated)
-  "cse546hwnotes.log"
-  "cse546hwnotes.pdf"
-  "cse546hwnotes.out"
   "cse546hwnotes.aux"
+  "cse546hwnotes.out"
+  "cse546hwnotes.pdf"
+  "cse546hwnotes.log"

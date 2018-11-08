@@ -780,6 +780,102 @@ Still, in low dimension it's perfectly fine, and we can of course do regression 
 
 
 \section{Kernel hijinks}
+Sometimes we may be confronted with things that are not linearly separable. What do? Well, we can always map into more dimensions until they \emph{are} separable. One nice way is polynomial feature maps $\phi(x) : \mathbb{R}^d \to \mathbb{R}^p$. We can encode these maps as vectors of all monomials of a given degree: if we have a data point $u \in \mathbb{R}^2$, for example, we can define
+%
+\begin{align}
+	\begin{array}{lrr}
+	d = 1:& \phi(u) =& \begin{bmatrix}u_1\\u_2\\\end{bmatrix}\\
+	d = 2:& \phi(u) =& \begin{bmatrix}u_1^2\\u_2^2\\u_1u_2\\u_2u_1\\\end{bmatrix}\\
+	\vdots &&\\
+	\text{general }d :& \dim(\phi(u)) \sim& p^d \text{ for } u\in \mathbb{R}^p.\\
+	\end{array}
+\end{align}
+%
+Can generate arbitrary multivariate polynomials in $u_i$ and $v_i$ via dot product between $\phi(u)$ and $\phi(v)$.
+
+Great, we can make huge polynomials. Why do we care? Kernel trick! Say we have
+%
+\begin{align}
+	\hat{w} &= \argmin_{w} \sum_{i=1}^n \left(y_i - x_i^T w\right)^2 + \lambda \|w\|_w^2.
+\end{align}
+%
+A theorem says that there exists $\alpha \in \mathbb{R}^n$ such that
+%
+\begin{align}
+	\hat{w} &= \sum_{i=1}^n \alpha_i x_i
+\end{align}
+%
+(where recall, $x_i \in \mathbb{R}^d$). What is this $\alpha$?
+%
+\begin{align}
+	\hat{\alpha} &= \argmin_{\alpha} \sum_{i=1}^n \left(y_i - \sum_{j=1}^n \alpha_j \braket{x_j,x_i}\right)^2 + \lambda \sum_{i,j=1}^n \alpha_i \alpha_j \braket{x_i,x_j}\\
+	\hat{\alpha} &= \argmin_{\alpha} \sum_{i=1}^n \left(y_I - \sum_{j=1}^n \alpha_j K(x_i,x_j)\right)^2 + \lambda \sum_{i,j=1}^n \alpha_i \alpha_j K(x_i,x_j)\\
+	\hat{\alpha} &= \argmin_\alpha \|y - K\alpha\|_2^2 + \lambda \alpha^T K \alpha,
+\end{align}
+%
+where
+%
+\begin{align}
+	K_{ij} = K(x_i,x_j) \equiv \braket{\phi(x_i),\phi(x_j)}.
+\end{align}
+%
+For $\lambda$ large enough to make $K+\lambda I$ p.d., we have
+%
+\begin{align}
+	\hat{\alpha} (K+\lambda I)^{-1} y.
+\end{align}
+%
+In practice, $K$ is often already p.d., so why do we regularize? Without it, we will trivially overfit any dataset, since we get $n$ dof to work with.
+
+The magic is that $\phi$ above doesn't actually have to be a polynomial map. It can map to \emph{any} inner-product space and the optimization procedure will go through fine. We don't even have to know what $\phi$ or the target space actually is as long as the kernel function $K(x,x')$ satisfies Mercer's condition: $K_{ij} = K(x_i,x_j)$ is PSD for any pointset $\{x_1,\ldots,x_n\}$.
 
 
+Some common kernels:
+%
+\begin{itemize}
+	\item Degree d polys --- $K(u,v) = (u \cdot v)^d$
+	\item Degree $\leq d$ polys --- $K(u,v) = (u\cdot v + 1)^d$
+	\item Gaussian --- $K(u,v) = \exp\left[-\frac{\|u-v\|_2^2}{2\sigma^2}\right]$
+	\item Sigmoid --- $K(u,v) = \tanh(\eta u\cdot v + \nu)$
+\end{itemize}
+
+The Gaussian (also called RBF) kernel is especially useful. Essentially weights by bumps centered around data points, but now we're training for the weight of each point, and have some hyperparameters to tune ($\lambda$ and $\sigma$).
+
+This was actually what we did with those weird random features in MNIST ridge regression. We used
+%
+\begin{align}
+	\phi(x) &= \begin{bmatrix}\sqrt{2}\cos(w_1^T x + b_1)\\\vdots\\\sqrt{2}\cos(w_p^T x + b_p)\\\end{bmatrix}
+\end{align}
+%
+with $w_k \sim \mathcal{N}(0,2\gamma I)$, $b_k \sim \mathrm{uniform}(0,\pi)$. This was weird! The explicit map for the Gaussian kernel features is infinite-dimensional, and that's a hard matrix to store. What have we done? Look at the expected inner product of two points mapped with our random map:
+%
+\begin{align}
+	\mathbb{E}\left[\frac{1}{p}\phi(x)^T \phi(y)\right] &= \frac{1}{p} \sum_{k=1}^p \mathbb{E}\left[2\cos(w_k^T x + b_k)\cos(w_k^T y + b_k)\right]\\
+	\mathbb{E}\left[\frac{1}{p}\phi(x)^T \phi(y)\right] &= \mathbb{E}_{w,b} \left[2\cos(w^T x + b)\cos(w^T y + b)\right]\\
+	\mathbb{E}\left[\frac{1}{p}\phi(x)^T \phi(y)\right] &= e^{-\gamma\|x-y\|_2^2}.
+\end{align}
+%
+We made a \emph{truncated} feature map which approximates the true kernel we want in expectation! (And $p=24000$ is nicer than infinite features\ldots)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Principal component analysis}
 \end{document}
