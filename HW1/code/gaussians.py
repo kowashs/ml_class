@@ -30,21 +30,33 @@ for i in range(3):
     sig_samp = np.matmul(np.transpose(X-mu_samp),X-mu_samp)/(n-1)
     
     evals, evecs = np.linalg.eigh(sig_samp)
-    print(evecs[1,1])
+    print(evecs)
     
     e1 = evals[np.argmax(evals)]
     u1 = evecs[:,np.argmax(evals)]
 
     e2 = evals[np.argmin(evals)]
-    u1 = evecs[:,np.argmin(evals)]
+    u2 = evecs[:,np.argmin(evals)]
     
-    ax.set_xlim((-10,10))
-    ax.set_ylim((-10,10))
+    ax.set_xlim((-7,7))
+    ax.set_ylim((-7,7))
 
     ax.plot(X[:,0],X[:,1],'^')
-    ax.plot([mu_samp[0],mu_samp[0]+np.sqrt(evals[0])*evecs[0,0]],[mu_samp[1],mu_samp[1]+np.sqrt(evals[0])*evecs[1,0]],lw=3)
-    ax.plot([mu_samp[0],mu_samp[0]+np.sqrt(evals[1])*evecs[0,1]],[mu_samp[1],mu_samp[1]+np.sqrt(evals[1])*evecs[1,1]],lw=3)
+    ax.plot([mu_samp[0],mu_samp[0]+np.sqrt(evals[0])*evecs[0,0]],[mu_samp[1],mu_samp[1]+np.sqrt(evals[0])*evecs[1,0]],lw=5)
+    ax.plot([mu_samp[0],mu_samp[0]+np.sqrt(evals[1])*evecs[0,1]],[mu_samp[1],mu_samp[1]+np.sqrt(evals[1])*evecs[1,1]],lw=5)
     
     ax.set_aspect('equal')
     plt.tight_layout()
-    plt.savefig('../figures/plot_%s.pdf' %i)
+    plt.savefig('../figures/unscale_plot_%s.pdf' %(i+1))
+    ax.cla()
+
+    X_tilde = np.matmul(X-mu_samp,np.transpose([u1,u2]))/np.sqrt([e1,e2])
+    ax.plot(X_tilde[:,0],X_tilde[:,1],'o',ms=6)
+    
+    ax.set_xlim((-7,7))
+    ax.set_ylim((-7,7))
+
+    ax.set_aspect('equal')
+    plt.tight_layout()
+    plt.savefig('../figures/scale_plot_%s.pdf' %(i+1))
+
