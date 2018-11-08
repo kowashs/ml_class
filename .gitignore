@@ -39,6 +39,14 @@ Thumbs.db
 *__pycache__*
 
 
+# LaTeX files #
+###############
+*.aux
+*.fdb_latexmk
+*.fls
+*.out
+
+
 videos/*
 slurm*
 load_example.py
