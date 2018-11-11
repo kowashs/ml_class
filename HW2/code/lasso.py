@@ -47,6 +47,7 @@ def lasso_descend(X, Y, w_init, lam, thresh):
         print("on descent step %s" %i)
         w_last = np.copy(w_curr)
         w_curr = descend_step(X, Y, w_curr, lam)
+        print(np.max(np.abs(w_curr-w_last)))
 
     b = np.mean(Y - np.matmul(X,np.transpose(w_curr)))
 
