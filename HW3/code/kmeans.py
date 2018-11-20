@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from functools import partial
 from mnist import MNIST
@@ -22,12 +24,14 @@ def load_train():
 
     return X_train, labels_train
 
+
+
+def kpp_init(k, X):
+    
+    return
+
 def get_cluster(mu,X):
     return np.argmin([np.dot(X-mu[i],X-mu[i]) for i in range(k)])
-
-def cluster_err(X,mu,cluster):
-    dev = X[cluster,:] - mu[cluster]
-    return np.sum(dev**2)
 
 def assign(X,mu):
     n,d = X.shape
@@ -52,15 +56,10 @@ def recenter(X,assignments):
 def objective(X,mu,assignments):
     k = len(mu)
     err = np.zeros(k)
-
-#     with Pool(os.cpu_count()-1) as pool:
-#         err = np.array(pool.map(partial(cluster_err,X,mu), np.arange(k)))
-
-
+    
     for i in range(k):
         dev = X[assignments[i],:] - mu[i]
         dev *= dev
-
         err[i] = np.sum(dev)
   
     return np.sum(err)
@@ -91,8 +90,13 @@ if __name__ == '__main__':
     objs = [objective(X,mu,assignments)]
     i = 0
     
+    assignments = assign(X,mu)
+    mu = recenter(X,assignments)
+    print("Manual first step.")
+
+    
     print("Entering loop.")
-    while np.max(np.abs(mu-mu_last)) > thresh:
+    while np.any([np.any(assignments_last[i] != assignments[i]) for i in assignments]):
         i += 1
         print(f"On iteration {i:4d}, last delta: {np.max(np.abs(mu-mu_last)):4f}")
     
@@ -104,6 +108,7 @@ if __name__ == '__main__':
     
         objs.append(objective(X,mu,assignments))
     
+    print("Escaped the loop.")
     
         
     for i in range(k):
