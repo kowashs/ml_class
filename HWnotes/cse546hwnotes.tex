@@ -944,7 +944,13 @@ and since columns of $V$ are orthonormal,
 %
 so we see that $v_i$ is an eigenvector of $A^T A$ with positive eigenvalue $S_{ii}^2$. A similar calculation for a column $u_i$ of $U$ shows that such columns are eigenvectors of $A A^T$ also with eigenvalues $S_{ii}^2$. (Compute eigenvalues of $A A^T$ or $A^T A$, whichever is smaller.)
 
-
+This is nice because the SVD of $JX = X - \bm{1}\bar{x}^T$ gives eigenvectors of $\Sigma$, and projection onto them is exactly PCA! In particular,
+%
+\begin{align}
+	(JX)(JX)^T = J XX^T J \equiv J K J = U S^2 U^T.
+\end{align}
+%
+Recall in the kernel interpretation we are embedding in a high-dimensional space and then effectively projecting back down onto new principal components.
 
 
 
@@ -967,6 +973,17 @@ Consider SVD of $X$ and see that
 Notice that the fraction is nearly zero for $s_i^2 \ll \lambda$ and nearly unity for $s_i^2 \gg \lambda$, which reflects ridge regression's preference for high-variance directions to spend its limited predictor magnitude on.
 
 
+\begin{thm}[Johnson--Lindenstrauss]
+	Let $\e > 0$ and set $q = 20 \e^{-2} \log(n)$. Assume that $A \in \R^{d \times q}$ has entries sampled iid from $\mathcal{N}(0,1/q)$. For any $z \in \R^d$, we have, with probability at least $1 - 2 \exp\left[(\e^2-\e^3)q/4\right]$ that
+	%
+	\begin{align}
+		(1-\e)\|z\|^2 \leq \|A^T z\|^2 \leq (1+\e)\|z\|^2.
+	\end{align}
+\end{thm}
+
+This is a crazy tight bound on the magnitude of projected vectors. Tells us that we don't really ever have high-d data; we can always project down to about $\log(n)$ dimensions with virtually no loss of information by this random projection. Further, this bound applies to \emph{every point}, not just an average representation error like in PCA.
+
+Alternatively, there is also non-negative matrix decomposition, which is apparently good?
 
 
 
@@ -977,4 +994,126 @@ Notice that the fraction is nearly zero for $s_i^2 \ll \lambda$ and nearly unity
 
 
 
+
+\section{Matrix completion}
+We've been doing a lot of formal wankery, but there is also a practical organization to this exploration: what do we actually want to do with this stuff and what are the methods for applying it? We've started with linear methods, and explored methods for turning nonlinear problems into linear ones. There is more, though! Matrix completion.
+
+What do we do about missing data? Recall that we were guaranteed by the SVD theorem that we could bust up a matrix $A$ as
+%
+\begin{align}
+	A &= \sum_{k=1}^r u_k v_k^T s_k,
+\end{align}
+%
+and we use that representation to describe the rank-1 approximation task: for $\sigma>0$ and unit vectors $x \in \R^m$, $y \in \R^n$, minimize
+%
+\begin{align}
+	\|\sigma xy^T  - A\|_F^2 \sigma^2 + \tr(A^T A) - 2 \sigma x^T A y\\
+	&= \sigma^2 + \left(\sum_{k=1}^r s_k^2\right) - 2 \sigma\left(\sum_{k=1}^r x^T u_k v_k^T y s_k\right).
+\end{align}
+%
+The best we can do is to make $\sigma = s_1$: cancel as much of the positive term as possible. This generalizes, in fact: the best rank-$p$ approximation to a matrix will be the first $p$ elements of the $SVD$ of our matrix.
+
+
+
+This gives us a tool for filling in incomplete data. We could do something like zero-filling, or mean-filling, but we can be more principled. Find a predictor
+%
+\begin{align}
+	\argmin_{U\in\R^{m\times d}, V\in\R^{n\times d}} \sum_{(i,j,s)\in\mathcal{S}} \|(UV^T)_{i,j} - s_{i,j}\|_2^2
+\end{align}
+%
+where $\mathcal{S}$ is all of the data points that we \emph{do} have. This can be hard, because the objective is non-convex. One approach is alternating optimization between $U$ and $V$.
+
+Then your prediction for $s_{ij}$ for $(i,j,s) \notin \mathcal{S}$ is $u_i^T v_j = (UV^T)_{ij}$, amounts to least-squares.
+
+(If you allocate an $m \times n$ matrix in part c of the homework, you're doing it wrong.)
+
+
+
+
+
+
+
+
+\section{k-means clustering}
+We often want to make clusters. How do we do it? Well, there's a good dumb way for starters: pick $k$ data points as centers of clusters and make a Voronoi diagram. Move each center to the centroid of the points in its cell, and re-Voronoi, iterate until good. Does it become good? What are we even trying to do? Essentially alternating optimization of
+%
+\begin{align}
+	F(\mu,C) &= \sum_{i=1}^k \sum_{j:C(j)=i} \|\mu_i-x_j\|^2
+\end{align}
+%
+between $\mu$ and $C$. It'll converge; this is cool.
+
+
+Okay, cool, so what do we do with this? Example, vector quantization! Block an image as a grid of a manageable number of patches. Run $k$-means on each patch to get a set of ``prototype'' configurations for each patch, then store an image as a list of means.
+
+
+\subsection{Spectral clustering}
+Suppose we have a dataset with some network of similarities/relationships between items. Can represent this as a graph with adjacency matrix $W_{ij}$, and a diagonal matrix of degrees $D_{ii} = \sum_{j} W_{ij}$. The Laplacian is then $L = D - w$. For some function $f$ on the nodes of our graph, note
+%
+\begin{align}
+	f^T L f &= \sum_{i=1}^N d_i f_i^2 - \sum_{i=1}^N \sum_{i'=1}^N f_i f_{i'} w_{ii'}\\
+	f^T L f &= \frac{1}{2} \sum_{i=1}^N \sum_{i'=1}^N w_{ii'} (f_i - f_{i'})^2.
+\end{align}
+
+With which we do\ldots something? Read the book.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Mixtures of Gaussians}
+The $k$-means method is cool, but it has failure modes. In particular, consider the case where our true clusters overlap or are spread out on different scales. This is where mixture models shine. We define $Y_1 \sim \mathcal{N}(\mu_1,\sigma_1^2)$, $Y_2 \sim \mathcal{N}(\mu_2,\sigma_2^2)$, and $Y = (1-\Delta) Y_1 + \Delta Y_2$ where $\Delta \in \{0,1\}$ with $\mathbb{P}(\Delta = 1) = \pi$.
+
+If we wanted to try to do this with an MLE on some drawn data $Z$, our likelihood is
+%
+\begin{align}
+	\ell(\theta \mid Z) &= \sum_{i=1}^n \log\left[(1-\pi)\phi_{\theta_1}(y_i) + \pi \phi_{\theta_2} (y_i)\right],
+\end{align}
+%
+which is a bad day for everybody. What if we knew which cluster we were in, though?
+%
+\begin{align}
+	\ell(\theta \mid Z,\Delta) &= \sum_{i=1}^n \left[(1-\Delta_i) \log\left((1-\pi)\phi_{\theta_1}(y_i)\right) + \Delta_i \log(\pi\phi_{\theta_2}(y_i))\right]
+\end{align}
+%
+The expected assignment (value of $\Delta_i$) is
+%
+\begin{align}
+	\gamma_i(\theta) \equiv \mathbb{E}\left[\Delta_i\mid\theta,Z\right] &= \frac{\pi \phi_{\theta_2}(y_i)}{(1-\pi)\phi_{\theta_1}(y_i) + \pi \phi_{\theta_2}(y_i)}.
+\end{align}
+
+Compute empirical means and variances \emph{weighted} by expected assignment from an initial guess model, then recompute guesses! We end up with more definite clusters.
+
+
+
+
+
+
+
+\section{Expectation maximization}
+GMM is really just a particular example of what's called an expectation maximization algorithm. Suppose we draw some data $x_1,\ldots,x_n$ drawn from some $p(\cdot\mid\theta_\ast)$ for parameters $\theta_\ast$. Suppose there is also some hidden data $z_i$ distributed according to $p(z_i\mid\theta')$. Then,
+%
+\begin{align}
+	\sum_{i=1}^n \log(p(x_i \mid \theta)) &= \sum_{i=1}^n \log\left(\sum_j p(x_i, z_i = j\mid \theta)\right)\\
+	&= \sum_{i=1}^n \log\left(\sum_i p(z_i = j\mid \theta') \frac{p(x_i,z_i=j\mid\theta)}{p(z_i = j \mid \theta')}\right)\\
+	&\geq \sum_{i=1}^n \sum_j p(z_i = j \mid \theta') \log\left(\frac{p(x_i,z_i=j\mid\theta)}{p(z_i = j \mid \theta')}\right)\\
+	&= \sum_{i=1}^n \sum_j p(z_i=j\mid\theta') \log(p(x_i,z_i=j\mid\theta)) + \sum_{i=1}\sum_j p(z_i = j\mid\theta') \log\left(\frac{1}{p(z_i = j\mid\theta')}\right)
+\end{align}
+%
+where the last line comes from Jensen's inequality,
+%
+\begin{align}
+	\mathbb{E}[f(x)] &\leq f(\mathbb{E}[x])
+\end{align}
+%
+for concave $f$.
 \end{document}
