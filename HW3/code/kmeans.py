@@ -10,6 +10,7 @@ import os
 import sys
 
 
+
 def load_test():
     mndata = MNIST('../../mnist/data/')
     X_test, labels_test = map(np.array, mndata.load_testing())
@@ -27,19 +28,40 @@ def load_train():
 
 
 def kpp_init(k, X):
+    n,d = X.shape
     
-    return
+    mu = [X[np.random.randint(n)]] #choose first cluster uniformly
+    print("Center 1 placed.")
+
+    assignments = assign(X,mu)
+
+    while len(mu) < k:
+        prob = np.zeros(n)
+        for assn in assignments:
+            for j in assignments[assn]:
+                prob[j] = np.dot(X[j]-mu[assn],X[j]-mu[assn])
+        
+        prob /= np.sum(prob)
+        mu.append(X[np.random.choice(n,p=prob)])
+        print(f"Center {len(mu)} placed.")
+        assignments = assign(X,mu)
+
+    return np.array(mu),assignments
 
 def get_cluster(mu,X):
+    k = len(mu)
     return np.argmin([np.dot(X-mu[i],X-mu[i]) for i in range(k)])
 
 def assign(X,mu):
     n,d = X.shape
     k = len(mu)
     assignments = {i: [] for i in range(k)}
-
-    with Pool(os.cpu_count()-1) as pool:
-        assign_inds = np.array(pool.map(partial(get_cluster,mu), X))
+    
+    assign_inds = np.fromiter(map(partial(get_cluster,mu),X),
+                              dtype=int,count=n)
+#     with Pool(os.cpu_count()-1) as pool:
+#         assign_inds = np.fromiter(pool.map(partial(get_cluster,mu), X),
+#                                   dtype=int,count=n)
    
     for i in range(k): assignments[i] = np.arange(n)[np.where(assign_inds == i)]
 
@@ -75,15 +97,20 @@ if __name__ == '__main__':
     k = int(sys.argv[1])
     thresh = 1e-3
     
-    
-    seeds = np.random.permutation(n)[:k]
-    mu = X[seeds]
-    mu_last = np.copy(mu)
-    
-    assignments = assign(X,mu)
-    assignments_last = assignments.copy()
-    print("Clusters seeded.")
-    
+    if sys.argv[2] == 'uni':
+        seeds = np.random.permutation(n)[:k]
+        mu = X[seeds]
+        mu_last = np.copy(mu)
+        
+        assignments = assign(X,mu)
+        assignments_last = assignments.copy()
+        print("Clusters seeded.")
+    elif sys.argv[2] == 'kpp':
+        mu, assignments = kpp_init(k,X)
+        mu_last = np.copy(mu)
+        assignments_last = assignments.copy()
+    else: print("Bad arg, specify uni or kpp")
+
     mu = recenter(X,assignments)
     print("First recentering")
     
@@ -110,11 +137,11 @@ if __name__ == '__main__':
     
     print("Escaped the loop.")
     
-        
+    fname = f'{k}-clusters' if sys.argv[2] == 'uni' else f'{k}-clusterspp'    
     for i in range(k):
         plt.imshow(mu[i].reshape(28,28),aspect='equal',cmap=plt.get_cmap('binary'))
         plt.tight_layout()
-        plt.savefig(f'../figures/{k}-clusters-{i}.pdf')
+        plt.savefig(f'../figures/{fname}-{i}.pdf')
     
     plt.cla()
     plt.clf()
@@ -124,5 +151,4 @@ if __name__ == '__main__':
     plt.ylabel('log(objective)', size=18)
     
     plt.tight_layout()
-    plt.savefig(f'../figures/{k}-clusters_objective.pdf')
-
+    plt.savefig(f'../figures/{fname}_objective.pdf')
