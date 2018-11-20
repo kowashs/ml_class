@@ -1,0 +1,17 @@
+Train error: 1711.553750
+Val error: 391.559156
+Test error: 464.537717
+
+
+Feature                                   Weight  
+-------------------------------------------------------
+log(UserNumReviews*BusinessNumCheckins)  & -2.923991 \\
+sq(ReviewNumWords*UserNumReviews)        & -3.151529 \\
+log(UserCoolVotes*BusinessIsOpen)        &  3.710749 \\
+log(ReviewNumLineBreaks*UserCoolVotes)   &  3.942156 \\
+log(UserUsefulVotes)                     &  5.355956 \\
+sq(UserNumReviews*BusinessIsOpen)        & -5.546979 \\
+sqrt(ReviewNumCharacters*UserCoolVotes)  &  10.729772\\
+log(UserNumReviews)                      & -18.129188\\
+sqrt(UserCoolVotes*BusinessNumStars)     &  18.803663\\
+log(ReviewNumCharacters*UserUsefulVotes) &  18.915628\\

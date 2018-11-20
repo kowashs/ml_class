@@ -32,7 +32,7 @@ def grad_b(mu, X, Y, w, lam):
 def hess_w(mu, X, Y, w, lam):
     n = len(mu)
     d = X.shape[1]
-    hess = np.zeros(d,d)
+    hess = np.zeros((d,d))
     for i in range(n):
         hess += mu[i]*(1-mu[i])*Y[i]**2*np.outer(X[i],X[i])
     
@@ -81,8 +81,7 @@ def gdescend(X_train, Y_train, X_test, Y_test, lam=0.1, eta = 0.4, tol = 1e-4):
     while (len(j_train) < 2 or
            (np.abs(j_train[-1]-j_train[-2]) if len(j_train) > 1 else 0) > tol):
         i += 1
-        print(f"Step {i}: delta = {(np.abs(j_train[-1]-j_train[-2]) "
-              f"if len(j_train) > 1 else 0)}")
+        print(f"Step {i}: delta = {(np.abs(j_train[-1]-j_train[-2]) if len(j_train) > 1 else 0)}")
         gb = grad_b(mu_train, X_train, Y_train, w, lam)
         gw = grad_w(mu_train, X_train, Y_train, w, lam)
         
@@ -132,8 +131,7 @@ def sgdescend(X_train, Y_train, X_test, Y_test, batch, lam=0.1, eta=0.4, tol=1e-
     while (len(j_train) < 2 or
            (np.abs(j_train[-1]-j_train[-2]) if len(j_train) > 1 else 0) > tol):
         i += 1
-        print(f"Step {i}: delta = {(np.abs(j_train[-1]-j_train[-2]) "
-              f"if len(j_train) > 1 else 0)}")
+        print(f"Step {i}: delta = {(np.abs(j_train[-1]-j_train[-2]) if len(j_train) > 1 else 0)}")
 
         batch_ind = np.random.randint(0,n_train,batch)
         X_batch = X_train[batch_ind]
@@ -149,6 +147,57 @@ def sgdescend(X_train, Y_train, X_test, Y_test, batch, lam=0.1, eta=0.4, tol=1e-
         mu_train = 1/(1+np.exp(-1*Y_train*(b + np.matmul(X_train, w))))
         mu_test = 1/(1+np.exp(-1*Y_test*(b + np.matmul(X_test, w))))
         
+        j_train.append(objective(mu_train, X_train, Y_train, w, lam))
+        j_test.append(objective(mu_test, X_test, Y_test, w, lam))
+        
+        e_train.append(np.count_nonzero(pred(X_train, w, b) - Y_train)/n_train)
+        e_test.append(np.count_nonzero(pred(X_test, w, b) - Y_test)/n_test)
+    
+    return j_train,j_test,e_train,e_test
+
+
+
+
+def newt_descend(X_train, Y_train, X_test, Y_test, lam=0.1, eta=0.4, tol=1e-4):
+    d = X_train.shape[1]
+    n_train = X_train.shape[0]
+    n_test = X_test.shape[0]
+    
+    j_train = []
+    j_test = []
+    e_train = []
+    e_test = []
+
+    w = np.zeros(d)
+    b = 0
+    
+    
+    mu_train = 1/(1+np.exp(-1*Y_train*(b + np.matmul(X_train, w))))
+    mu_test = 1/(1+np.exp(-1*Y_test*(b + np.matmul(X_test, w))))
+    j_train.append(objective(mu_train, X_train, Y_train, w, lam))
+    j_test.append(objective(mu_test, X_test, Y_test, w, lam))
+    e_train.append(np.count_nonzero(pred(X_train, w, b) - Y_train)/n_train)
+    e_test.append(np.count_nonzero(pred(X_test, w, b) - Y_test)/n_test)
+    i=0
+    print(f"Step {i}")
+
+    while (len(j_train) < 2 or
+           (np.abs(j_train[-1]-j_train[-2]) if len(j_train) > 1 else 0) > tol):
+        i += 1
+        print(f"Step {i}: delta = {(np.abs(j_train[-1]-j_train[-2]) if len(j_train) > 1 else 0)}")
+
+        vw = np.linalg.solve(hess_w(mu_train, X_train, Y_train, w, lam),
+                             -1*grad_w(mu_train, X_train, Y_train, w, lam))
+        gb = grad_b(mu_train,X_train,Y_train,w,lam)
+        hb = hess_b(mu_train,X_trian,Y_train,w,lam)
+        vb = -1*gb/hb
+
+        b += eta*vb
+        w += eta*vw
+
+        mu_train = 1/(1+np.exp(-1*Y_train*(b + np.matmul(X_train, w))))
+        mu_test =  1/(1+np.exp(-1*Y_test*(b + np.matmul(X_test, w))))
+
         j_train.append(objective(mu_train, X_train, Y_train, w, lam))
         j_test.append(objective(mu_test, X_test, Y_test, w, lam))
         
@@ -199,6 +248,14 @@ elif sys.argv[1] == 'sgd':
              j_test=j_test, e_train=e_train, e_test=e_test)
 
 
+elif sys.argv[1] == 'newt':
+    j_train,j_test,e_train,e_test = newt_descend(X_train, Y_train, X_test,
+                                                 Y_test, eta=float(sys.argv[2]))
+    
+    now = datetime.now().time()
+    stamp = f"{now.hour:02d}_{now.minute:02d}_{now.second:02d}"
+    np.savez(f'data/newtdescent-{stamp}', j_train=j_train,
+             j_test=j_test, e_train=e_train, e_test=e_test)
 
 
 

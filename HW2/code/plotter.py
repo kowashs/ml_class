@@ -64,8 +64,11 @@ plt.cla()
 data = np.load('data/gdescent-23_22_40.npz')
 j_train,j_test,e_train,e_test = [data[i][1:] for i in data.files]
 
-plt.plot(j_train,'-o',label='j_train')
-plt.plot(j_test,'-o',label='j_test')
+its = np.arange(1,len(j_train)+1)
+
+plt.plot(its,j_train,'-o',label='j_train')
+plt.plot(its,j_test,'-o',label='j_test')
+
 plt.xlabel('iteration',size=16)
 plt.ylabel('objective function',size=16)
 plt.legend(fontsize=16)
@@ -75,8 +78,8 @@ plt.cla()
 
 
 
-plt.plot(e_train,'-o',label='err_train')
-plt.plot(e_test,'-o',label='err_test')
+plt.plot(its,e_train,'-o',label='err_train')
+plt.plot(its,e_test,'-o',label='err_test')
 plt.xlabel('iteration',size=16)
 plt.ylabel('error',size=16)
 plt.legend(fontsize=16)
@@ -90,9 +93,10 @@ plt.cla()
 data = np.load('data/sgdescent-1-23_22_17.npz')
 j_train,j_test,e_train,e_test = [data[i][1:] for i in data.files]
 
+its = np.arange(1,len(j_train)+1)
 
-plt.plot(j_train,'-o',label='j_train')
-plt.plot(j_test,'-o',label='j_test')
+plt.plot(its,j_train,'-o',label='j_train')
+plt.plot(its,j_test,'-o',label='j_test')
 plt.xlabel('iteration',size=16)
 plt.ylabel('objective function',size=16)
 plt.legend(fontsize=16)
@@ -102,8 +106,8 @@ plt.cla()
 
 
 
-plt.plot(e_train,'-o',label='err_train')
-plt.plot(e_test,'-o',label='err_test')
+plt.plot(its,e_train,'-o',label='err_train')
+plt.plot(its,e_test,'-o',label='err_test')
 plt.xlabel('iteration',size=16)
 plt.ylabel('error',size=16)
 plt.legend(fontsize=16)
@@ -116,9 +120,10 @@ plt.cla()
 
 data = np.load('data/sgdescent-100-23_21_47.npz')
 j_train,j_test,e_train,e_test = [data[i][1:] for i in data.files]
+its = np.arange(1,len(j_train)+1)
 
-plt.plot(j_train,'-o',label='j_train')
-plt.plot(j_test,'-o',label='j_test')
+plt.plot(its,j_train,'-o',label='j_train')
+plt.plot(its,j_test,'-o',label='j_test')
 plt.xlabel('iteration',size=16)
 plt.ylabel('objective function',size=16)
 plt.legend(fontsize=16)
@@ -128,11 +133,40 @@ plt.cla()
 
 
 
-plt.plot(e_train,'-o',label='err_train')
-plt.plot(e_test,'-o',label='err_test')
+plt.plot(its,e_train,'-o',label='err_train')
+plt.plot(its,e_test,'-o',label='err_test')
 plt.xlabel('iteration',size=16)
 plt.ylabel('error',size=16)
 plt.legend(fontsize=16)
 plt.tight_layout()
 plt.savefig('../figures/mnist_sgd_100_err.pdf')
+plt.cla()
+
+
+
+
+#newt
+data = np.load('data/newtdescent-01_40_07.npz')
+j_train,j_test,e_train,e_test = [data[i][1:] for i in data.files]
+
+its = np.arange(1,len(j_train)+1)
+
+plt.plot(its,j_train,'-o',label='j_train')
+plt.plot(its,j_test,'-o',label='j_test')
+plt.xlabel('iteration',size=16)
+plt.ylabel('objective function',size=16)
+plt.legend(fontsize=16)
+plt.tight_layout()
+plt.savefig('../figures/mnist_newt_obj.pdf')
+plt.cla()
+
+
+
+plt.plot(its,e_train,'-o',label='err_train')
+plt.plot(its,e_test,'-o',label='err_test')
+plt.xlabel('iteration',size=16)
+plt.ylabel('error',size=16)
+plt.legend(fontsize=16)
+plt.tight_layout()
+plt.savefig('../figures/mnist_newt_err.pdf')
 plt.cla()

@@ -14,6 +14,7 @@
 \usepackage{hyperref}
 \usepackage{mathabx}
 \usepackage{parskip}
+\usepackage{subcaption}
 \usepackage{tensor}
 \usepackage{titlesec}
 \usepackage{titling}
@@ -397,12 +398,31 @@
 				\label{fig:yelp_feats}
 			\end{figure}
 		
-		\item
+		\item When trained at $\lambda=1.11$, our predictor achieves mean-squared error of 0.428 for the training set, 0.392 for the validation set, and 0.465 for the test set.
 
 
 
 
-		\item
+		\item The features with the largest weights are shown in Table~\ref{tab:topfeats}. These results are roughly sensible: longer reviews of better-rated restaurants from overall more-upvoted users tend to perform better. Interestingly, every feature containing \texttt{UserNumReviews} has a negative weight, suggesting that perhaps users with many reviews post a torrent of low-quality content, while users with fewer reviews have put more thought into their work.
+
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{c|c}
+				Feature name & Weight\\\hline
+				log(ReviewNumCharacters*UserUsefulVotes) &  18.915628\\
+				sqrt(UserCoolVotes*BusinessNumStars)     &  18.803663\\
+				log(UserNumReviews)                      & -18.129188\\
+				sqrt(ReviewNumCharacters*UserCoolVotes)  &  10.729772\\
+				sq(UserNumReviews*BusinessIsOpen)        & -5.546979 \\
+				log(UserUsefulVotes)                     &  5.355956 \\
+				log(ReviewNumLineBreaks*UserCoolVotes)   &  3.942156 \\
+				log(UserCoolVotes*BusinessIsOpen)        &  3.710749 \\
+				sq(ReviewNumWords*UserNumReviews)        & -3.151529 \\
+				log(UserNumReviews*BusinessNumCheckins)  & -2.923991 \\
+			\end{tabular}
+			\caption{Top 10 highest-weighted features at optimal $\lambda$}
+			\label{tab:topfeats}
+		\end{table}
 	\end{enumerate}
 
 
@@ -461,6 +481,91 @@
 			\nabla_b \mu_i &= \frac{y_i \exp\left[-y_i(b+x_i^T w)\right]}{\left(1+\exp\left[-y_i(b+x_i^T w)\right]\right)^2} = \mu_i(1-\mu_i)y_i\\
 			\nabla^2_b J(w,b) &= \frac{1}{n} \sum_{i=1}^n \mu_i(1-\mu_i) y_i^2.
 		\end{align*}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		\item We implemented gradient descent on this MNIST classification problem from an initial guess of all zeros, and settled on a step size of $\eta = 0.4$ as giving reliably quick convergence and minimal overshooting issues.
+
+		\begin{figure}[H]
+			\centering
+			\begin{subfigure}[t]{.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{figures/mnist_gd_obj.pdf}
+			\end{subfigure}
+			%
+			\begin{subfigure}[t]{.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{figures/mnist_gd_err.pdf}
+			\end{subfigure}
+			\caption{Objective and classification error at each gradient descent iteration}
+		\end{figure}
+
+
+
+
+		\item Stochastic gradient descent with a batch size of 1 shows a much less stable descent pattern, often showing large fluctuations in classification error as steps stumble toward the minimum.
+
+		\begin{figure}[H]
+			\centering
+			\begin{subfigure}[t]{.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{figures/mnist_sgd_1_obj.pdf}
+			\end{subfigure}
+			%
+			\begin{subfigure}[t]{.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{figures/mnist_sgd_1_err.pdf}
+			\end{subfigure}
+			\caption{Objective and classification error at each stochastic gradient descent iteration; batch size 1}
+		\end{figure}
+
+		\item Increasing batch size to 100 seems to give much more reliable steps after a relatively large first step error.
+
+
+		\begin{figure}[H]
+			\centering
+			\begin{subfigure}{.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{figures/mnist_sgd_100_obj.pdf}
+			\end{subfigure}
+			%
+			\begin{subfigure}{.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{figures/mnist_sgd_100_err.pdf}
+			\end{subfigure}
+			\caption{Objective and classification error at each stochastic gradient descent iteration; batch size 100}
+		\end{figure}
+
+		\item We also implemented Newton's method on the same data. Although it technically took the fewest steps for the same step-size and tolerance, each individual step was much, much slower owing to the need to calculate the relatively slow Hessian for every point and then solve for the step vector. The error graph looks suspicious, but the initial error is already at least as good as any achieved with gradient descent, so I think the apparent increase is just small oscillation around an already good first iterate.
+
+
+		\begin{figure}[H]
+			\centering
+			\begin{subfigure}{.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{figures/mnist_newt_obj.pdf}
+			\end{subfigure}
+			%
+			\begin{subfigure}{.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{figures/mnist_newt_err.pdf}
+			\end{subfigure}
+			\caption{Objective and classification error at iteration of Newton's method}
+		\end{figure}
 	\end{enumerate}
 \end{enumerate}
 
@@ -485,7 +590,11 @@
 \clearpage
 \lstinputlisting[language=Python]{code/yelp_lasso.py}
 \clearpage
+\lstinputlisting[language=Python]{code/yelp_test.py}
+\clearpage
 \lstinputlisting[language=Python]{code/grad_descend.py}
+\clearpage
+\lstinputlisting[language=Python]{code/plotter.py}
 
 
 
