@@ -164,8 +164,73 @@
 \begin{enumerate}
 \setcounter{enumi}{3}
 	\item \begin{enumerate}
-		\item
-		\item 
+		\item Figures below show cluster centers in the full MNIST set (train joined with test) from $k$-means for a variety of different cluster counts. In general, they all resemble identifiable numerals, but more clusters tends to lead to more distinct features. At $k=5$ we see centers somewhere in between similar numerals like 3 and 8 or 9 and 4, but at $k=20$ the algorithm has the freedom to center clusters around more specific forms like taller or rounder or more slanted 9s.
+
+
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=.5\textwidth]{figures/5-centers.pdf}
+			\caption{Final centers for $k=5$ with uniform initialization}
+		\end{figure}
+
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=.5\textwidth]{figures/10-centers.pdf}
+			\caption{Final centers for $k=10$ with uniform initialization}
+		\end{figure}
+
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=.5\textwidth]{figures/20-centers.pdf}
+			\caption{Final centers for $k=20$ with uniform initialization}
+		\end{figure}
+
+
+
+
+		\item Figures below show centers obtained with the $\texttt{k-means++}$ intialization scheme. They look broadly similar to the uniform case, although perhaps modestly crisper. 
+
+		Fig.~\ref{fig:km_objs} compare the convergence rate to uniform initialization through the mean squared distance from a point to its cluster center. We see that other than for $k=5$, the new initialization converges faster and to smaller mean distances.
+
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=.5\textwidth]{figures/5pp-centers.pdf}
+			\caption{Final centers for $k=5$ with \texttt{k-means++} initialization}
+		\end{figure}
+
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=.5\textwidth]{figures/10pp-centers.pdf}
+			\caption{Final centers for $k=10$ with \texttt{k-means++} initialization}
+		\end{figure}
+
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=.5\textwidth]{figures/20pp-centers.pdf}
+			\caption{Final centers for $k=20$ with \texttt{k-means++} initialization}
+		\end{figure}
+
+
+		\begin{figure}[H]
+		\centering
+			\begin{subfigure}[t]{.32\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{figures/5-objective.pdf}
+			\end{subfigure}
+			%
+			\begin{subfigure}[t]{.32\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{figures/10-objective.pdf}
+			\end{subfigure}
+			%
+			\begin{subfigure}[t]{.32\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]{figures/20-objective.pdf}
+			\end{subfigure}
+
+			\caption{Objective function vs. iteration number for $k = 5,10,20$ from left to right}
+		\end{figure}
+		\label{fig:km_objs}
 	\end{enumerate}
 \end{enumerate}
 
