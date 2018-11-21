@@ -57,11 +57,11 @@ def assign(X,mu):
     k = len(mu)
     assignments = {i: [] for i in range(k)}
     
-    assign_inds = np.fromiter(map(partial(get_cluster,mu),X),
-                              dtype=int,count=n)
-#     with Pool(os.cpu_count()-1) as pool:
-#         assign_inds = np.fromiter(pool.map(partial(get_cluster,mu), X),
-#                                   dtype=int,count=n)
+#    assign_inds = np.fromiter(map(partial(get_cluster,mu),X),
+#                              dtype=int,count=n)
+    with Pool(7) as pool:
+        assign_inds = np.fromiter(pool.map(partial(get_cluster,mu), X),
+                                  dtype=int,count=n)
    
     for i in range(k): assignments[i] = np.arange(n)[np.where(assign_inds == i)]
 
@@ -138,17 +138,21 @@ if __name__ == '__main__':
     print("Escaped the loop.")
     
     fname = f'{k}-clusters' if sys.argv[2] == 'uni' else f'{k}-clusterspp'    
-    for i in range(k):
-        plt.imshow(mu[i].reshape(28,28),aspect='equal',cmap=plt.get_cmap('binary'))
-        plt.tight_layout()
-        plt.savefig(f'../figures/{fname}-{i}.pdf')
     
-    plt.cla()
-    plt.clf()
     
-    plt.plot(np.log10(objs),'o',ms=3)
-    plt.xlabel('Iteration', size=18)
-    plt.ylabel('log(objective)', size=18)
-    
-    plt.tight_layout()
-    plt.savefig(f'../figures/{fname}_objective.pdf')
+    np.savez(f'data/{fname}',objs=np.array(objs),mu=mu)
+
+#     for i in range(k):
+#         plt.imshow(mu[i].reshape(28,28),aspect='equal',cmap=plt.get_cmap('binary'))
+#         plt.tight_layout()
+#         plt.savefig(f'../figures/{fname}-{i}.pdf')
+#     
+#     plt.cla()
+#     plt.clf()
+#     
+#     plt.plot(np.log10(objs),'o',ms=3)
+#     plt.xlabel('Iteration', size=18)
+#     plt.ylabel('log(objective)', size=18)
+#     
+#     plt.tight_layout()
+#     plt.savefig(f'../figures/{fname}_objective.pdf')
