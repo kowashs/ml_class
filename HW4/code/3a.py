@@ -16,9 +16,8 @@ def imshow(img):
     plt.imshow(np.transpose(npimg, (1,2,0)))
     plt.show()
 
-def train(net, trainloader, testloader, calc_acc, acc_file,
-          criterion, optimizer, max_epochs,
-          rate, momentum):
+def train(net, trainloader, testloader, calc_acc, criterion, optimizer, rate,
+          momentum, max_epochs=10,acc_file=None):
 
     for epoch in range(max_epochs):
      
@@ -94,6 +93,8 @@ total_file = f"../data/3a_parameter_search"
 
 if calc_acc:
     acc_file = f"../data/3a_r{100000*rate:.0f}_p{100000*momentum:.0f}_accs"
+else:
+    acc_file = None
 
 ###############################################################################
 # load and normalize data                                                     #
@@ -106,13 +107,13 @@ transform = transforms.Compose([transforms.ToTensor(),
 trainset = torchvision.datasets.CIFAR10(root='../data', train=True,
                                         download=True, transform=transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=4,
-                                          shuffle=True, num_workers=2)
+                                          shuffle=True, num_workers=n_workers)
 
 
 testset = torchvision.datasets.CIFAR10(root='../data', train=False,
                                         download=True, transform=transform)
 testloader = torch.utils.data.DataLoader(testset, batch_size=4,
-                                          shuffle=True, num_workers=2)
+                                          shuffle=True, num_workers=n_workers)
 
 classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse',
            'ship', 'truck')
@@ -124,13 +125,13 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=rate, momentum=momentum)
 
 
-train(net, trainloader, testloader, calc_acc, acc_file,
-      criterion, optimizer, n_epochs,
-      rate, momentum)
+train(net, trainloader, testloader, calc_acc,
+      criterion, optimizer,
+      rate, momentum, n_epochs, acc_file,)
 
 test_acc = accuracy(testloader,net)
 with open(total_file,'a') as f:
     f.write(f"{rate:16.4e}{momentum:16.4e}{test_acc:10.4f}\n")
-
+print(f"Final test acc: {test_acc:10.4f}")
 
 
