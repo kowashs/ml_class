@@ -76,11 +76,18 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(M,10)
 
     def forward(self, x):
-        x = x.view(-1, 32*32*3)
+        x = x.view(-1, self.num_flat_features(x))
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
 
         return x
+
+    def num_flat_features(self, x):
+        size = x.size()[1:]
+        num_features = 1
+        for s in size:
+            num_features *= s
+        return num_features
 
 ###############################################################################
 # arg processing and filename init                                            #                    

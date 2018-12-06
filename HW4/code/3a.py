@@ -2,6 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
+import time
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -18,6 +19,8 @@ def imshow(img):
 
 def train(net, trainloader, testloader, calc_acc, criterion, optimizer, rate,
           momentum, max_epochs=10,acc_file=None):
+    splits = np.zeros(max_epochs+1)
+    splits[0] = time.time()
 
     for epoch in range(max_epochs):
      
@@ -38,6 +41,10 @@ def train(net, trainloader, testloader, calc_acc, criterion, optimizer, rate,
                 print(f'[{epoch+1:d}, {i+1:5d}] loss: {running_loss/2000:.3f}')
     
                 running_loss = 0.
+        
+        splits[epoch+1] = time.time()
+        print(f"Finished epoch {epoch} in {splits[epoch+1]-splits[epoch]:.0f}")
+        print(f"Total time: {splits[epoch+1]-splits[0]:.0f}")
 
         if calc_acc:
             train_acc = accuracy(trainloader,net)
@@ -74,10 +81,17 @@ class Net(nn.Module):
         self.fc = nn.Linear(32*32*3,10)
 
     def forward(self, x):
-        x = x.view(-1, 32*32*3)
+        x = x.view(-1, self.num_flat_features(x))
         x = self.fc(x)
 
         return x
+
+    def num_flat_features(self, x):
+        size = x.size()[1:]
+        num_features = 1
+        for s in size:
+            num_features *= s
+        return num_features
 
 ###############################################################################
 # arg processing and filename init                                            #                    
@@ -123,7 +137,6 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse',
 net = Net()
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=rate, momentum=momentum)
-
 
 train(net, trainloader, testloader, calc_acc,
       criterion, optimizer,
