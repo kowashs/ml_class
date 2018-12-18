@@ -345,7 +345,7 @@
 \begin{enumerate}
 \setcounter{enumi}{2}
 	\item \begin{enumerate}
-		\item LOOCV was temperamental in this problem; when I tried alternately minimizing $\lambda$ and the hyperparameter for a given kernel, it was generally driven toward the extremes of the parameter range, e.g. $\lambda=10^{\pm 8}$ and $d = 0$ or 60, for one run. This made it difficult to pick these parameters in a principled way.
+		\item Leave-one-out cross-validation with random search gave $\lambda = 2.66\times10^{-7}$ and $d=18$ for the polynomial kernel. Similarly, for the RBF kernel we get $\lambda = 4.94\times10^{-4}$ and $\gamma = 25.82$.
 
 		\item 
 
